@@ -27,7 +27,7 @@ TRAIN:
   USE_FLIPPED: False
   CHROMATIC: True
   ADD_NOISE: True
-  VISUALIZE: False
+  VISUALIZE: True
   VERTEX_REG: True
   POSE_REG: False       # no rotation regression
   FREEZE_LAYERS: False
@@ -59,6 +59,4 @@ TEST:
   SYNTHESIZE: False
   POSE_REFINE: True
   ROS_CAMERA: camera
-#  CLASSES: !!python/tuple [3, 7, 8, 11]
   CLASSES: !!python/tuple [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21] # with large clamp (19)
-
