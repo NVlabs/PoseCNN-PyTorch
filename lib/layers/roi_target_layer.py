@@ -10,7 +10,7 @@ from __future__ import division
 import torch
 import numpy as np
 import numpy.random as npr
-from config.config_posecnn import cfg
+from fcn.config import cfg
 from utils.bbox_transform import bbox_transform
 from utils.cython_bbox import bbox_overlaps
 

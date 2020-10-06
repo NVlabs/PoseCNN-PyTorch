@@ -10,7 +10,7 @@ from __future__ import print_function
 
 import torch
 import numpy as np
-from config.config_posecnn import cfg
+from fcn.config import cfg
 from utils.bbox_transform import bbox_transform_inv
 from utils.cython_bbox import bbox_overlaps
 

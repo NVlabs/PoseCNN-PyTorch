@@ -9,13 +9,13 @@ import math
 import sys
 import copy
 from torch.nn.init import kaiming_normal_
-from utils.posecnn_layer.hard_label import HardLabel
-from utils.posecnn_layer.hough_voting import HoughVoting
-from utils.posecnn_layer.roi_pooling import RoIPool
-from utils.posecnn_layer.point_matching_loss import PMLoss
-from utils.posecnn_layer.roi_target_layer import roi_target_layer
-from utils.posecnn_layer.pose_target_layer import pose_target_layer
-from config.config_posecnn import cfg
+from layers.hard_label import HardLabel
+from layers.hough_voting import HoughVoting
+from layers.roi_pooling import RoIPool
+from layers.point_matching_loss import PMLoss
+from layers.roi_target_layer import roi_target_layer
+from layers.pose_target_layer import pose_target_layer
+from fcn.config import cfg
 
 __all__ = [
     'posecnn',

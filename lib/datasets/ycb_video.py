@@ -78,19 +78,8 @@ class YCBVideo(data.Dataset, datasets.imdb):
         self._class_colors = [self._class_colors_all[i] for i in cfg.TRAIN.CLASSES]
         self._symmetry = self._symmetry_all[cfg.TRAIN.CLASSES]
         self._extents = self._extents_all[cfg.TRAIN.CLASSES]
-        self._points, self._points_all, self._point_blob, self._points_clamp = self._load_object_points()
+        self._points, self._points_all, self._point_blob = self._load_object_points()
         self._pixel_mean = torch.tensor(cfg.PIXEL_MEANS / 255.0).cuda().float()
-
-        self._classes_other = []
-        for i in range(self._num_classes_all):
-            if i not in cfg.TRAIN.CLASSES:
-                # do not use clamp
-                if i == 19 and 20 in cfg.TRAIN.CLASSES:
-                    continue
-                if i == 20 and 19 in cfg.TRAIN.CLASSES:
-                    continue
-                self._classes_other.append(i)
-        self._num_classes_other = len(self._classes_other)
 
         # 3D model paths
         self.model_mesh_paths = ['{}/{}/textured_simple.obj'.format(self._model_path, cls) for cls in self._classes_all[1:]]
@@ -103,14 +92,11 @@ class YCBVideo(data.Dataset, datasets.imdb):
         self.model_texture_paths_target = ['{}/{}/texture_map.png'.format(self._model_path, cls) for cls in self._classes[1:]]
         self.model_colors_target = [np.array(self._class_colors_all[i]) / 255.0 for i in cfg.TRAIN.CLASSES[1:]]
 
-        self._class_to_ind = dict(zip(self._classes, xrange(self._num_classes)))
+        self._class_to_ind = dict(zip(self._classes, range(self._num_classes)))
         self._image_ext = '.jpg'
         self._image_index = self._load_image_set_index(image_set)
 
-        if (cfg.MODE == 'TRAIN' and cfg.TRAIN.SYNTHESIZE) or (cfg.MODE == 'TEST' and cfg.TEST.SYNTHESIZE):
-            self._size = len(self._image_index) * (cfg.TRAIN.SYN_RATIO+1)
-        else:
-            self._size = len(self._image_index)
+        self._size = len(self._image_index)
         if self._size > cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH:
             self._size = cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH
         self._roidb = self.gt_roidb()
@@ -119,14 +105,6 @@ class YCBVideo(data.Dataset, datasets.imdb):
         else:
             self._perm = np.arange(len(self._roidb))
         self._cur = 0
-        if cfg.MODE == 'TRAIN' or (cfg.MODE == 'TEST' and cfg.TEST.SYNTHESIZE == True):
-            self._build_background_images()
-        self._build_uniform_poses()
-
-        # poses from the dataset
-        if cfg.MODE == 'TRAIN' or (cfg.MODE == 'TEST' and cfg.TEST.SYNTHESIZE == True):
-            self._poses = self._load_all_poses()
-            self._pose_indexes = np.zeros((self._num_classes-1, ), dtype=np.int32)
 
         assert os.path.exists(self._ycb_video_path), \
                 'ycb_video path does not exist: {}'.format(self._ycb_video_path)
@@ -134,261 +112,9 @@ class YCBVideo(data.Dataset, datasets.imdb):
                 'Data path does not exist: {}'.format(self._data_path)
 
 
-    def _render_item(self):
-
-        height = cfg.TRAIN.SYN_HEIGHT
-        width = cfg.TRAIN.SYN_WIDTH
-        fx = self._intrinsic_matrix[0, 0]
-        fy = self._intrinsic_matrix[1, 1]
-        px = self._intrinsic_matrix[0, 2]
-        py = self._intrinsic_matrix[1, 2]
-        zfar = 6.0
-        znear = 0.01
-        classes = np.array(cfg.TRAIN.CLASSES)
-
-        # sample target objects
-        if cfg.TRAIN.SYN_SAMPLE_OBJECT:
-            maxnum = np.minimum(self.num_classes-1, cfg.TRAIN.SYN_MAX_OBJECT)
-            num = np.random.randint(cfg.TRAIN.SYN_MIN_OBJECT, maxnum+1)
-            perm = np.random.permutation(np.arange(self.num_classes-1))
-            indexes_target = perm[:num] + 1
-        else:
-            num = self.num_classes - 1
-            indexes_target = np.arange(num) + 1
-        num_target = num
-        cls_indexes = [cfg.TRAIN.CLASSES[i]-1 for i in indexes_target]
-
-        # sample other objects as distractors
-        num_other = min(5, self._num_classes_other)
-        perm = np.random.permutation(np.arange(self._num_classes_other))
-        indexes = perm[:num_other]
-        for i in range(num_other):
-            cls_indexes.append(self._classes_other[indexes[i]]-1)
-
-        # sample poses
-        num = num_target + num_other
-        poses_all = []
-        for i in range(num):
-            qt = np.zeros((7, ), dtype=np.float32)
-            # rotation
-            cls = int(cls_indexes[i])
-
-            if cfg.TRAIN.SYN_SAMPLE_POSE and i < num_target:
-                # sample from dataset poses
-                cls_ind = np.where(classes == cls+1)[0]
-                cls_ind = int(cls_ind) - 1
-                if self._pose_indexes[cls_ind] >= len(self._poses[cls_ind]):
-                    self._pose_indexes[cls_ind] = 0
-                    pindex = np.random.permutation(np.arange(len(self._poses[cls_ind])))
-                    self._poses[cls_ind] = self._poses[cls_ind][pindex]
-                ind = self._pose_indexes[cls_ind]
-                pose = self._poses[cls_ind][ind, :]
-                euler = pose[:3] + (cfg.TRAIN.SYN_STD_ROTATION * math.pi / 180.0) * np.random.randn(3)
-                qt[3:] = euler2quat(euler[0], euler[1], euler[2])
-                self._pose_indexes[cls_ind] += 1
-
-                qt[0] = pose[3] + np.random.uniform(-0.1, 0.1)
-                qt[1] = pose[4] + np.random.uniform(-0.1, 0.1)
-                qt[2] = pose[5] + np.random.uniform(-0.1, 0.1)
-
-            else:
-                # uniformly sample poses
-                if self.pose_indexes[cls] >= len(self.pose_lists[cls]):
-                    self.pose_indexes[cls] = 0
-                    self.pose_lists[cls] = np.random.permutation(np.arange(len(self.eulers)))
-                yaw = self.eulers[self.pose_lists[cls][self.pose_indexes[cls]]][0] + 15 * np.random.randn()
-                pitch = self.eulers[self.pose_lists[cls][self.pose_indexes[cls]]][1] + 15 * np.random.randn()
-                roll = self.eulers[self.pose_lists[cls][self.pose_indexes[cls]]][2] + 15 * np.random.randn()
-                qt[3:] = euler2quat(yaw * math.pi / 180.0, pitch * math.pi / 180.0, roll * math.pi / 180.0, 'syxz')
-                self.pose_indexes[cls] += 1
-
-                # translation
-                bound = cfg.TRAIN.SYN_BOUND
-                if i == 0 or i >= num_target or np.random.rand(1) > 0.5:
-                    qt[0] = np.random.uniform(-bound, bound)
-                    qt[1] = np.random.uniform(-bound, bound)
-                    qt[2] = np.random.uniform(cfg.TRAIN.SYN_TNEAR, cfg.TRAIN.SYN_TFAR)
-                else:
-                    # sample an object nearby
-                    object_id = np.random.randint(0, i, size=1)[0]
-                    extent = np.mean(self._extents_all[cls+1, :])
-
-                    flag = np.random.randint(0, 2)
-                    if flag == 0:
-                        flag = -1
-                    qt[0] = poses_all[object_id][0] + flag * extent * np.random.uniform(1.0, 1.5)
-                    if np.absolute(qt[0]) > bound:
-                        qt[0] = poses_all[object_id][0] - flag * extent * np.random.uniform(1.0, 1.5)
-                    if np.absolute(qt[0]) > bound:
-                        qt[0] = np.random.uniform(-bound, bound)
-
-                    flag = np.random.randint(0, 2)
-                    if flag == 0:
-                        flag = -1
-                    qt[1] = poses_all[object_id][1] + flag * extent * np.random.uniform(1.0, 1.5)
-                    if np.absolute(qt[1]) > bound:
-                        qt[1] = poses_all[object_id][1] - flag * extent * np.random.uniform(1.0, 1.5)
-                    if np.absolute(qt[1]) > bound:
-                        qt[1] = np.random.uniform(-bound, bound)
-
-                    qt[2] = poses_all[object_id][2] - extent * np.random.uniform(2.0, 4.0)
-                    if qt[2] < cfg.TRAIN.SYN_TNEAR:
-                        qt[2] = poses_all[object_id][2] + extent * np.random.uniform(2.0, 4.0)
-
-            poses_all.append(qt)
-        cfg.renderer.set_poses(poses_all)
-
-        # sample lighting
-        # light pose
-        theta = np.random.uniform(-np.pi/2, np.pi/2)
-        phi = np.random.uniform(0, np.pi/2)
-        r = np.random.uniform(0.25, 3.0)
-        light_pos = [r * np.sin(theta) * np.sin(phi), r * np.cos(phi) + np.random.uniform(-2, 2), r * np.cos(theta) * np.sin(phi)]
-        cfg.renderer.set_light_pos(light_pos)
-
-        # light color
-        intensity = np.random.uniform(0.5, 3.0)
-        light_color = intensity * np.random.uniform(0.5, 1.5, 3)
-        cfg.renderer.set_light_color(light_color)
-            
-        # rendering
-        cfg.renderer.set_projection_matrix(width, height, fx, fy, px, py, znear, zfar)
-        image_tensor = torch.cuda.FloatTensor(height, width, 4).detach()
-        seg_tensor = torch.cuda.FloatTensor(height, width, 4).detach()
-        cfg.renderer.render(cls_indexes, image_tensor, seg_tensor)
-        image_tensor = image_tensor.flip(0)
-        seg_tensor = seg_tensor.flip(0)
-
-        # foreground mask
-        seg = seg_tensor[:,:,2] + 256*seg_tensor[:,:,1] + 256*256*seg_tensor[:,:,0]
-        mask = (seg != 0).unsqueeze(0).repeat((3, 1, 1)).float()
-
-        # RGB to BGR order
-        im = image_tensor.cpu().numpy()
-        im = np.clip(im, 0, 1)
-        im = im[:, :, (2, 1, 0)] * 255
-        im = im.astype(np.uint8)
-
-        im_label = seg_tensor.cpu().numpy()
-        im_label = im_label[:, :, (2, 1, 0)] * 255
-        im_label = np.round(im_label).astype(np.uint8)
-        im_label = np.clip(im_label, 0, 255)
-        im_label, im_label_all = self.process_label_image(im_label)
-
-        centers = np.zeros((num, 2), dtype=np.float32)
-        rcenters = cfg.renderer.get_centers()
-        for i in range(num):
-            centers[i, 0] = rcenters[i][1] * width
-            centers[i, 1] = rcenters[i][0] * height
-        centers = centers[:num_target, :]
-
-        # chromatic transform
-        if cfg.TRAIN.CHROMATIC and cfg.MODE == 'TRAIN' and np.random.rand(1) > 0.1:
-            im = chromatic_transform(im)
-
-        im_cuda = torch.from_numpy(im).cuda().float() / 255.0
-        if cfg.TRAIN.ADD_NOISE and cfg.MODE == 'TRAIN' and np.random.rand(1) > 0.1:
-            im_cuda = add_noise_cuda(im_cuda)
-        im_cuda -= self._pixel_mean
-        im_cuda = im_cuda.permute(2, 0, 1)
-
-        # label blob
-        classes = np.array(range(self.num_classes))
-        label_blob = np.zeros((self.num_classes, self._height, self._width), dtype=np.float32)
-        label_blob[0, :, :] = 1.0
-        for i in range(1, self.num_classes):
-            I = np.where(im_label == classes[i])
-            if len(I[0]) > 0:
-                label_blob[i, I[0], I[1]] = 1.0
-                label_blob[0, I[0], I[1]] = 0.0
-
-        # poses and boxes
-        pose_blob = np.zeros((self.num_classes, 9), dtype=np.float32)
-        gt_boxes = np.zeros((self.num_classes, 5), dtype=np.float32)
-        for i in xrange(num_target):
-            cls = int(indexes_target[i])
-            pose_blob[i, 0] = 1
-            pose_blob[i, 1] = cls
-            T = poses_all[i][:3]
-            qt = poses_all[i][3:]
-
-            # egocentric to allocentric
-            qt_allocentric = egocentric2allocentric(qt, T)
-            if qt_allocentric[0] < 0:
-                qt_allocentric = -1 * qt_allocentric
-            pose_blob[i, 2:6] = qt_allocentric
-            pose_blob[i, 6:] = T
-
-            # compute box
-            x3d = np.ones((4, self._points_all.shape[1]), dtype=np.float32)
-            x3d[0, :] = self._points_all[cls,:,0]
-            x3d[1, :] = self._points_all[cls,:,1]
-            x3d[2, :] = self._points_all[cls,:,2]
-            RT = np.zeros((3, 4), dtype=np.float32)
-            RT[:3, :3] = quat2mat(qt)
-            RT[:, 3] = T
-            x2d = np.matmul(self._intrinsic_matrix, np.matmul(RT, x3d))
-            x2d[0, :] = np.divide(x2d[0, :], x2d[2, :])
-            x2d[1, :] = np.divide(x2d[1, :], x2d[2, :])
-        
-            gt_boxes[i, 0] = np.min(x2d[0, :])
-            gt_boxes[i, 1] = np.min(x2d[1, :])
-            gt_boxes[i, 2] = np.max(x2d[0, :])
-            gt_boxes[i, 3] = np.max(x2d[1, :])
-            gt_boxes[i, 4] = cls
-
-        # construct the meta data
-        """
-        format of the meta_data
-        intrinsic matrix: meta_data[0 ~ 8]
-        inverse intrinsic matrix: meta_data[9 ~ 17]
-        """
-        K = self._intrinsic_matrix
-        K[2, 2] = 1
-        Kinv = np.linalg.pinv(K)
-        meta_data_blob = np.zeros(18, dtype=np.float32)
-        meta_data_blob[0:9] = K.flatten()
-        meta_data_blob[9:18] = Kinv.flatten()
-
-        # vertex regression target
-        if cfg.TRAIN.VERTEX_REG:
-            vertex_targets, vertex_weights = self._generate_vertex_targets(im_label, indexes_target, centers, poses_all, classes, self.num_classes)
-        else:
-            vertex_targets = []
-            vertex_weights = []
-
-        im_info = np.array([im.shape[1], im.shape[2], cfg.TRAIN.SCALES_BASE[0], 1], dtype=np.float32)
-
-        sample = {'image_color': im_cuda,
-                  'label': label_blob,
-                  'mask': mask,
-                  'meta_data': meta_data_blob,
-                  'poses': pose_blob,
-                  'extents': self._extents,
-                  'points': self._point_blob,
-                  'symmetry': self._symmetry,
-                  'gt_boxes': gt_boxes,
-                  'im_info': im_info,
-                  'video_id': 'none',
-                  'image_id': 'none'}
-
-        if cfg.TRAIN.VERTEX_REG:
-            sample['vertex_targets'] = vertex_targets
-            sample['vertex_weights'] = vertex_weights
-
-        return sample
-
-
-
     def __getitem__(self, index):
 
         is_syn = 0
-        if ((cfg.MODE == 'TRAIN' and cfg.TRAIN.SYNTHESIZE) or (cfg.MODE == 'TEST' and cfg.TEST.SYNTHESIZE)) and (index % (cfg.TRAIN.SYN_RATIO+1) != 0):
-            is_syn = 1
-
-        if is_syn:
-            return self._render_item()
-
         if self._cur >= len(self._roidb):
             self._perm = np.random.permutation(np.arange(len(self._roidb)))
             self._cur = 0
@@ -484,11 +210,6 @@ class YCBVideo(data.Dataset, datasets.imdb):
         if im_scale != 1.0:
             im_label = cv2.resize(im_label, None, None, fx=im_scale, fy=im_scale, interpolation=cv2.INTER_NEAREST)
 
-        # change large clamp to extra large clamp
-        im_label_original = im_label.copy()
-        I = np.where(im_label == 19)
-        im_label[I] = 20
-
         label_blob = np.zeros((num_classes, height, width), dtype=np.float32)
         label_blob[0, :, :] = 1.0
         for i in range(1, num_classes):
@@ -512,16 +233,8 @@ class YCBVideo(data.Dataset, datasets.imdb):
         pose_blob = np.zeros((num_classes, 9), dtype=np.float32)
         gt_boxes = np.zeros((num_classes, 5), dtype=np.float32)
         count = 0
-        for i in xrange(num):
+        for i in range(num):
             cls = int(meta_data['cls_indexes'][i])
-
-            # change large clamp to extra large clamp
-            if cls == 19:
-                clamp = 1
-                cls = 20
-            else:
-                clamp = 0
-
             ind = np.where(classes == cls)[0]
             if len(ind) > 0:
                 R = poses[:, :3, i]
@@ -539,14 +252,9 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
                 # compute box
                 x3d = np.ones((4, self._points_all.shape[1]), dtype=np.float32)
-                if clamp:
-                    x3d[0, :] = self._points_clamp[:,0]
-                    x3d[1, :] = self._points_clamp[:,1]
-                    x3d[2, :] = self._points_clamp[:,2]
-                else:
-                    x3d[0, :] = self._points_all[ind,:,0]
-                    x3d[1, :] = self._points_all[ind,:,1]
-                    x3d[2, :] = self._points_all[ind,:,2]
+                x3d[0, :] = self._points_all[ind,:,0]
+                x3d[1, :] = self._points_all[ind,:,1]
+                x3d[2, :] = self._points_all[ind,:,2]
                 RT = np.zeros((3, 4), dtype=np.float32)
                 RT[:3, :3] = quat2mat(qt)
                 RT[:, 3] = T
@@ -579,7 +287,8 @@ class YCBVideo(data.Dataset, datasets.imdb):
             center = meta_data['center']
             if roidb['flipped']:
                 center[:, 0] = width - center[:, 0]
-            vertex_targets, vertex_weights = self._generate_vertex_targets(im_label_original, meta_data['cls_indexes'], center, poses, classes, num_classes)
+            vertex_targets, vertex_weights = self._generate_vertex_targets(im_label,
+                meta_data['cls_indexes'], center, poses, classes, num_classes)
         else:
             vertex_targets = []
             vertex_weights = []
@@ -596,7 +305,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
         vertex_weights = np.zeros((3 * num_classes, height, width), dtype=np.float32)
 
         c = np.zeros((2, 1), dtype=np.float32)
-        for i in xrange(1, num_classes):
+        for i in range(1, num_classes):
             y, x = np.where(im_label == classes[i])
             I = np.where(im_label == classes[i])
             ind = np.where(cls_indexes == classes[i])[0]
@@ -623,35 +332,6 @@ class YCBVideo(data.Dataset, datasets.imdb):
                 vertex_weights[3*i+0, y, x] = cfg.TRAIN.VERTEX_W_INSIDE
                 vertex_weights[3*i+1, y, x] = cfg.TRAIN.VERTEX_W_INSIDE
                 vertex_weights[3*i+2, y, x] = cfg.TRAIN.VERTEX_W_INSIDE
-
-        # handle clamp
-        y, x = np.where(im_label == 19)
-        I = np.where(im_label == 19)
-        ind = np.where(cls_indexes == 19)[0]
-        i = np.where(classes == 20)[0]
-        if len(x) > 0 and len(ind) > 0 and len(i) > 0:
-            c[0] = center[ind, 0]
-            c[1] = center[ind, 1]
-            if isinstance(poses, list):
-                z = poses[int(ind)][2]
-            else:
-                if len(poses.shape) == 3:
-                    z = poses[2, 3, ind]
-                else:
-                    z = poses[ind, -1]
-            R = np.tile(c, (1, len(x))) - np.vstack((x, y))
-            # compute the norm
-            N = np.linalg.norm(R, axis=0) + 1e-10
-            # normalization
-            R = np.divide(R, np.tile(N, (2,1)))
-            # assignment
-            vertex_targets[3*i+0, y, x] = R[0,:]
-            vertex_targets[3*i+1, y, x] = R[1,:]
-            vertex_targets[3*i+2, y, x] = math.log(z)
-
-            vertex_weights[3*i+0, y, x] = cfg.TRAIN.VERTEX_W_INSIDE
-            vertex_weights[3*i+1, y, x] = cfg.TRAIN.VERTEX_W_INSIDE
-            vertex_weights[3*i+2, y, x] = cfg.TRAIN.VERTEX_W_INSIDE
 
         return vertex_targets, vertex_weights
 
@@ -717,10 +397,10 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
     def _load_object_points(self):
 
-        points = [[] for _ in xrange(len(self._classes))]
+        points = [[] for _ in range(len(self._classes))]
         num = np.inf
 
-        for i in xrange(1, len(self._classes)):
+        for i in range(1, len(self._classes)):
             point_file = os.path.join(self._model_path, self._classes[i], 'points.xyz')
             print(point_file)
             assert os.path.exists(point_file), 'Path does not exist: {}'.format(point_file)
@@ -729,12 +409,12 @@ class YCBVideo(data.Dataset, datasets.imdb):
                 num = points[i].shape[0]
 
         points_all = np.zeros((self._num_classes, num, 3), dtype=np.float32)
-        for i in xrange(1, len(self._classes)):
+        for i in range(1, len(self._classes)):
             points_all[i, :, :] = points[i][:num, :]
 
         # rescale the points
         point_blob = points_all.copy()
-        for i in xrange(1, self._num_classes):
+        for i in range(1, self._num_classes):
             # compute the rescaling factor for the points
             weight = 10.0 / np.amax(self._extents[i, :])
             if weight < 10:
@@ -744,12 +424,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
             else:
                 point_blob[i, :, :] = weight * point_blob[i, :, :]
 
-        # points of large clamp
-        point_file = os.path.join(self._model_path, '051_large_clamp', 'points.xyz')
-        points_clamp = np.loadtxt(point_file)
-        points_clamp = points_clamp[:num, :]
-
-        return points, points_all, point_blob, points_clamp
+        return points, points_all, point_blob
 
 
     def _load_object_extents(self):
@@ -793,7 +468,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
         """
         Construct an depth path from the image's "index" identifier.
         """
-        depth_path = os.path.join(self._data_path, index + '-depth' + self._image_ext)
+        depth_path = os.path.join(self._data_path, index + '-depth.png')
         assert os.path.exists(depth_path), \
                 'Path does not exist: {}'.format(depth_path)
         return depth_path
@@ -809,7 +484,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
         """
         Construct an metadata path from the image's "index" identifier.
         """
-        label_path = os.path.join(self._data_path, index + '-label' + self._image_ext)
+        label_path = os.path.join(self._data_path, index + '-label.png')
         assert os.path.exists(label_path), \
                 'Path does not exist: {}'.format(label_path)
         return label_path
@@ -910,7 +585,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
         # label image is in BGR order
         index = label_image[:,:,2] + 256*label_image[:,:,1] + 256*256*label_image[:,:,0]
-        for i in xrange(1, len(self._class_colors_all)):
+        for i in range(1, len(self._class_colors_all)):
             color = self._class_colors_all[i]
             ind = color[0] + 256*color[1] + 256*256*color[2]
             I = np.where(index == ind)
@@ -1058,10 +733,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
                     if len(roi_index) > 0:
                         RT = np.zeros((3, 4), dtype=np.float32)
                         ind = int(result['rois'][roi_index, 1])
-                        if ind == -1:
-                            points = self._points_clamp
-                        else:
-                            points = self._points[ind]
+                        points = self._points[ind]
 
                         # pose from network
                         RT[:3, :3] = quat2mat(result['poses'][roi_index, :4].flatten())
