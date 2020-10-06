@@ -27,9 +27,9 @@ TRAIN:
   USE_FLIPPED: False
   CHROMATIC: True
   ADD_NOISE: True
-  VISUALIZE: True
+  VISUALIZE: False
   VERTEX_REG: True
-  POSE_REG: False       # no rotation regression
+  POSE_REG: True
   FREEZE_LAYERS: False
   VERTEX_W: 10.0
   VERTEX_W_INSIDE: 10.0
