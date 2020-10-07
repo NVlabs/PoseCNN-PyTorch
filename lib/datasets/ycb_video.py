@@ -74,10 +74,12 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
         # select a subset of classes
         self._classes = [self._classes_all[i] for i in cfg.TRAIN.CLASSES]
+        self._classes_test = [self._classes_all[i] for i in cfg.TEST.CLASSES]
         self._num_classes = len(self._classes)
         self._class_colors = [self._class_colors_all[i] for i in cfg.TRAIN.CLASSES]
         self._symmetry = self._symmetry_all[cfg.TRAIN.CLASSES]
         self._extents = self._extents_all[cfg.TRAIN.CLASSES]
+        self._extents_test = self._extents_all[cfg.TEST.CLASSES]
         self._points, self._points_all, self._point_blob = self._load_object_points()
         self._pixel_mean = torch.tensor(cfg.PIXEL_MEANS / 255.0).cuda().float()
 
@@ -390,7 +392,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
         # sample a subset for training
         if image_set == 'train':
-            image_index = image_index[::10]
+            image_index = image_index[::2]
 
         return image_index
 
