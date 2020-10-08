@@ -17,7 +17,6 @@ from fcn.config import cfg
 
 def compute_index_sdf(rois):
     num = rois.shape[0]
-    rind = 0
     index_sdf = []
     for i in range(num):
         cls = int(rois[i, 1])
@@ -25,30 +24,84 @@ def compute_index_sdf(rois):
             continue
         if cfg.TRAIN.CLASSES[cls] not in cfg.TEST.CLASSES:
             continue
-        rind += 1
-        index_sdf.append(rind-1)
+        if rois[i, -1] < cfg.TEST.DET_THRESHOLD:
+            continue
+        index_sdf.append(i)
     return index_sdf
 
-
 # SDF refinement
-def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=False):
+def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=True):
 
     start_time = time.time()
-    steps=cfg.TEST.NUM_SDF_ITERATIONS_TRACKING
+    width = im_depth.shape[1]
+    height = im_depth.shape[0]
+    sdf_optim = cfg.sdf_optimizer
+    steps = cfg.TEST.NUM_SDF_ITERATIONS_TRACKING
     index_sdf = compute_index_sdf(rois)
 
     # backproject depth
-    num = rois.shape[0]
     intrinsic_matrix = meta_data[0, :9].cpu().numpy().reshape((3, 3))
     fx = intrinsic_matrix[0, 0]
     fy = intrinsic_matrix[1, 1]
     px = intrinsic_matrix[0, 2]
     py = intrinsic_matrix[1, 2]
+    zfar = 6.0
+    znear = 0.01
     im_pcloud = posecnn_cuda.backproject_forward(fx, fy, px, py, im_depth)[0]
+    dpoints = im_pcloud[:,:,:3].cpu().numpy().reshape((-1, 3))
 
-    width = im_depth.shape[1]
-    height = im_depth.shape[0]
-    sdf_optim = cfg.sdf_optimizer
+    # rendering
+    num = len(index_sdf)
+    poses_all = []
+    cls_indexes = []
+    for i in range(num):
+        ind = index_sdf[i]
+        cls = int(rois[ind, 1])
+        cls_render = cfg.TEST.CLASSES.index(cfg.TRAIN.CLASSES[cls]) - 1
+        cls_indexes.append(cls_render)
+        qt = np.zeros((7, ), dtype=np.float32)
+        qt[3:] = poses[ind, :4]
+        qt[:3] = poses[ind, 4:]
+        poses_all.append(qt)
+    cfg.renderer.set_poses(poses_all)
+    cfg.renderer.set_projection_matrix(width, height, fx, fy, px, py, znear, zfar)
+    image_tensor = torch.cuda.FloatTensor(height, width, 4).detach()
+    seg_tensor = torch.cuda.FloatTensor(height, width, 4).detach()
+    pcloud_tensor = torch.cuda.FloatTensor(height, width, 4).detach()
+    cfg.renderer.render(cls_indexes, image_tensor, seg_tensor, pc2_tensor=pcloud_tensor)
+    pcloud_tensor = pcloud_tensor.flip(0)
+    pcloud = pcloud_tensor[:,:,:3].cpu().numpy().reshape((-1, 3))   
+
+    # refine translation
+    poses_t = poses.copy()
+    for i in range(num):
+        ind = index_sdf[i]
+        cls = int(rois[ind, 1])
+        cls_render = cfg.TEST.CLASSES.index(cfg.TRAIN.CLASSES[cls]) - 1
+        x1 = max(int(rois[ind, 2]), 0)
+        y1 = max(int(rois[ind, 3]), 0)
+        x2 = min(int(rois[ind, 4]), width-1)
+        y2 = min(int(rois[ind, 5]), height-1)
+        labels = torch.zeros_like(im_label)
+        labels[y1:y2, x1:x2] = im_label[y1:y2, x1:x2]
+        labels = labels.cpu().numpy().reshape((width * height, ))
+        index = np.where((labels == cls) & np.isfinite(dpoints[:, 0]) & (pcloud[:, 0] != 0) & (dpoints[:, 0] != 0))[0]
+        if len(index) > 10:
+            T = np.mean(dpoints[index, :] - pcloud[index, :], axis=0)
+            z_new = poses[ind, 6] + T[2]
+            poses_t[ind, 6] = z_new
+            poses_t[ind, 4] = (poses[ind, 4] / poses[ind, 6]) * z_new
+            poses_t[ind, 5] = (poses[ind, 5] / poses[ind, 6]) * z_new
+            print('object {}, class {}, z {}, z new {}'.format(i, dataset._classes_test[cls_render+1], poses[ind, 6], z_new))
+
+    if visualize:
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        image_tensor = image_tensor.flip(0)
+        im = image_tensor.cpu().numpy() * 255
+        im = im.astype(np.uint8)
+        plt.imshow(im)
+        plt.show()
 
     # compare the depth
     depth_meas_roi = im_pcloud[:, :, 2]
@@ -56,7 +109,6 @@ def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=F
     mask_depth_valid = torch.isfinite(depth_meas_roi)
 
     # prepare data
-    num = len(index_sdf)
     T_oc_init = np.zeros((num, 4, 4), dtype=np.float32)
     cls_index = torch.cuda.FloatTensor(0, 1)
     obj_index = torch.cuda.FloatTensor(0, 1)
@@ -65,22 +117,21 @@ def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=F
 
         # pose
         ind = index_sdf[i]
-        pose = poses[ind, :].copy()
+        pose = poses_t[ind, :].copy()
         T_co = np.eye(4, dtype=np.float32)
         T_co[:3, :3] = quat2mat(pose[:4])
         T_co[:3, 3] = pose[4:]
         T_oc_init[i] = np.linalg.inv(T_co)
 
-        # filter out points far away
+        # filter out points very far away
         z = float(pose[6])
         roi = rois[ind, :].copy()
-        extent = 1.2 * np.mean(dataset._extents_test[int(roi[1]), :]) / 2
+        cls = int(roi[1])
+        extent = 1.0 * np.mean(dataset._extents[cls, :])
         mask_distance = torch.abs(depth_meas_roi - z) < extent
             
         # mask label
-        roi = rois[ind, :].copy()
-        cls = int(roi[1])
-        cls_render = cls - 1
+        cls_render = cfg.TEST.CLASSES.index(cfg.TRAIN.CLASSES[cls]) - 1
         w = roi[4] - roi[2]
         h = roi[5] - roi[3]
         x1 = max(int(roi[2] - w / 2), 0)
@@ -90,8 +141,7 @@ def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=F
         if im_label is not None:
             labels = torch.zeros_like(im_label)
             labels[y1:y2, x1:x2] = im_label[y1:y2, x1:x2]
-            cls_train = cfg.TRAIN.CLASSES.index(cfg.TEST.CLASSES[cls])
-            mask_label = labels == cls_train
+            mask_label = labels == cls
         else:
             mask_label = torch.zeros_like(mask_depth_meas)
             mask_label[y1:y2, x1:x2] = 1
@@ -134,13 +184,13 @@ def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=F
     n = pix_index.shape[0]
     print('sdf with {} points'.format(n))
     if n == 0:
-        return poses.copy()
+        return poses_t.copy()
     points = im_pcloud[pix_index[:, 0], pix_index[:, 1], :]
     points = torch.cat((points, cls_index, obj_index), dim=1)
     T_oc_opt = sdf_optim.refine_pose_layer(T_oc_init, points, steps=steps)
 
     # collect poses
-    poses_refined = poses.copy()
+    poses_refined = poses_t.copy()
     for i in range(num):
         RT_opt = T_oc_opt[i]
         ind = index_sdf[i]
@@ -155,6 +205,7 @@ def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=F
             ind = index_sdf[i]
             roi = rois[ind, :].copy()
             cls = int(roi[1])
+            cls = cfg.TEST.CLASSES.index(cfg.TRAIN.CLASSES[cls])
             T_co_init = np.linalg.inv(T_oc_init[i])
 
             pose = poses_refined[ind, :].copy()

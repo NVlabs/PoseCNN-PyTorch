@@ -56,7 +56,7 @@ def loadTexture(path):
 
 
 class YCBRenderer:
-    def __init__(self, width=512, height=512, gpu_id=0, render_marker=False, robot='panda_arm'):
+    def __init__(self, width=512, height=512, gpu_id=0, render_marker=False, robot=''):
         self.render_marker = render_marker
         self.VAOs = []
         self.VBOs = []

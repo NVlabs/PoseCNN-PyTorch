@@ -78,10 +78,18 @@ class YCBVideo(data.Dataset, datasets.imdb):
         self._num_classes = len(self._classes)
         self._class_colors = [self._class_colors_all[i] for i in cfg.TRAIN.CLASSES]
         self._symmetry = self._symmetry_all[cfg.TRAIN.CLASSES]
+        self._symmetry_test = self._symmetry_all[cfg.TEST.CLASSES]
         self._extents = self._extents_all[cfg.TRAIN.CLASSES]
         self._extents_test = self._extents_all[cfg.TEST.CLASSES]
-        self._points, self._points_all, self._point_blob = self._load_object_points()
         self._pixel_mean = torch.tensor(cfg.PIXEL_MEANS / 255.0).cuda().float()
+
+        # train classes
+        self._points, self._points_all, self._point_blob = \
+            self._load_object_points(self._classes, self._extents, self._symmetry)
+
+        # test classes
+        self._points_test, self._points_all_test, self._point_blob_test = \
+            self._load_object_points(self._classes_test, self._extents_test, self._symmetry_test)
 
         # 3D model paths
         self.model_mesh_paths = ['{}/{}/textured_simple.obj'.format(self._model_path, cls) for cls in self._classes_all[1:]]
@@ -397,31 +405,31 @@ class YCBVideo(data.Dataset, datasets.imdb):
         return image_index
 
 
-    def _load_object_points(self):
+    def _load_object_points(self, classes, extents, symmetry):
 
-        points = [[] for _ in range(len(self._classes))]
+        points = [[] for _ in range(len(classes))]
         num = np.inf
-
-        for i in range(1, len(self._classes)):
-            point_file = os.path.join(self._model_path, self._classes[i], 'points.xyz')
+        num_classes = len(classes)
+        for i in range(1, num_classes):
+            point_file = os.path.join(self._model_path, classes[i], 'points.xyz')
             print(point_file)
             assert os.path.exists(point_file), 'Path does not exist: {}'.format(point_file)
             points[i] = np.loadtxt(point_file)
             if points[i].shape[0] < num:
                 num = points[i].shape[0]
 
-        points_all = np.zeros((self._num_classes, num, 3), dtype=np.float32)
-        for i in range(1, len(self._classes)):
+        points_all = np.zeros((num_classes, num, 3), dtype=np.float32)
+        for i in range(1, num_classes):
             points_all[i, :, :] = points[i][:num, :]
 
         # rescale the points
         point_blob = points_all.copy()
-        for i in range(1, self._num_classes):
+        for i in range(1, num_classes):
             # compute the rescaling factor for the points
-            weight = 10.0 / np.amax(self._extents[i, :])
+            weight = 10.0 / np.amax(extents[i, :])
             if weight < 10:
                 weight = 10
-            if self._symmetry[i] > 0:
+            if symmetry[i] > 0:
                 point_blob[i, :, :] = 4 * weight * point_blob[i, :, :]
             else:
                 point_blob[i, :, :] = weight * point_blob[i, :, :]
@@ -598,54 +606,6 @@ class YCBVideo(data.Dataset, datasets.imdb):
                 labels[I[0], I[1]] = ind
 
         return labels, labels_all
-
-
-    def _load_all_poses(self):
-
-        # load cache file
-        prefix = '_class'
-        for i in range(len(cfg.TRAIN.CLASSES)):
-            prefix += '_%d' % cfg.TRAIN.CLASSES[i]
-        cache_file = os.path.join(self.cache_path, self.name + prefix + '_poses.pkl')
-        if os.path.exists(cache_file):
-            with open(cache_file, 'rb') as fid:
-                poses = cPickle.load(fid)
-                for i in range(len(poses)):
-                    print('%s, min distance %f, max distance %f' % (self._classes[i+1], np.min(poses[i][:,5]), np.max(poses[i][:,5])))
-            print('{} poses loaded from {}'.format(self.name, cache_file))
-            return poses
-
-        poses = [np.zeros((0, 6), dtype=np.float32) for i in range(len(cfg.TRAIN.CLASSES)-1)] # no background
-        classes = np.array(cfg.TRAIN.CLASSES)
-
-        # load all image indexes
-        image_index = self._load_image_set_index('trainval')
-        print('loading poses...')
-        for i in range(len(image_index)):
-            filename = os.path.join(self._data_path, image_index[i] + '-meta.mat')
-
-            meta_data = scipy.io.loadmat(filename)
-            cls_indexes = meta_data['cls_indexes'].flatten()
-            gt = meta_data['poses']
-            if len(gt.shape) == 2:
-                gt = np.reshape(gt, (3, 4, 1))
-
-            for j in range(len(cls_indexes)):
-                cls = int(cls_indexes[j])
-                ind = np.where(classes == cls)[0]
-                if len(ind) > 0:
-                    R = gt[:, :3, j]
-                    T = gt[:, 3, j]
-                    pose = np.zeros((1, 6), dtype=np.float32)
-                    pose[0, :3] = mat2euler(R)
-                    pose[0, 3:] = T
-                    poses[int(ind)-1] = np.concatenate((poses[int(ind)-1], pose), axis=0)
-
-        # save poses
-        with open(cache_file, 'wb') as fid:
-            cPickle.dump(poses, fid, cPickle.HIGHEST_PROTOCOL)
-        print('wrote poses to {}'.format(cache_file))
-        return poses
 
 
     def evaluation(self, output_dir):

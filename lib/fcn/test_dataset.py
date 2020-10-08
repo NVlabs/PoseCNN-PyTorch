@@ -102,10 +102,10 @@ def test(test_loader, background_loader, network, output_dir):
                         qt = out_quaternion[j, 4*cls:4*cls+4]
                         qt = qt / np.linalg.norm(qt)
                         # allocentric to egocentric
+                        poses[j, 4] *= poses[j, 6]
+                        poses[j, 5] *= poses[j, 6]
                         T = poses[j, 4:]
                         poses[j, :4] = allocentric2egocentric(qt, T)
-                        poses[j, 4] *= poses[j, 6] 
-                        poses[j, 5] *= poses[j, 6]
 
                 # non-maximum suppression within class
                 index = nms(rois, 0.5)
@@ -345,7 +345,7 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
                     continue
                 cls = int(rois[j, 1])
                 if cls > 0:
-                    print(i, classes[cls], rois[j, -1])
+                    print('%s: detection score %s' % (classes[cls], rois[j, -1]))
                 if rois[j, -1] > cfg.TEST.DET_THRESHOLD:
                     # extract 3D points
                     x3d = np.ones((4, points.shape[1]), dtype=np.float32)

@@ -137,12 +137,16 @@ if __name__ == '__main__':
     cudnn.benchmark = True
 
     # renderer
-    if cfg.TRAIN.SYNTHESIZE:
-        print('loading 3D models')
+    if cfg.TEST.SYNTHESIZE or cfg.TEST.POSE_REFINE:
         cfg.renderer = YCBRenderer(width=cfg.TRAIN.SYN_WIDTH, height=cfg.TRAIN.SYN_HEIGHT, gpu_id=args.gpu_id, render_marker=False)
-        cfg.renderer.load_objects(dataset.model_mesh_paths, dataset.model_texture_paths, dataset.model_colors)
+        if cfg.TEST.SYNTHESIZE:
+            cfg.renderer.load_objects(dataset.model_mesh_paths, dataset.model_texture_paths, dataset.model_colors)
+        else:
+            model_mesh_paths = [dataset.model_mesh_paths[i-1] for i in cfg.TEST.CLASSES[1:]]
+            model_texture_paths = [dataset.model_texture_paths[i-1] for i in cfg.TEST.CLASSES[1:]]
+            model_colors = [dataset.model_colors[i-1] for i in cfg.TEST.CLASSES[1:]]
+            cfg.renderer.load_objects(model_mesh_paths, model_texture_paths, model_colors)
         cfg.renderer.set_camera_default()
-        print(dataset.model_mesh_paths)
 
     # load sdfs
     if cfg.TEST.POSE_REFINE:
