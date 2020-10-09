@@ -91,3 +91,7 @@ class imdb(object):
         self.pose_lists = []
         for i in range(num_classes):
             self.pose_lists.append(np.random.permutation(np.arange(num_poses)))
+
+
+    def evaluation(self, output_dir):
+        print('evaluation function not implemented for dataset %s' % self._name)

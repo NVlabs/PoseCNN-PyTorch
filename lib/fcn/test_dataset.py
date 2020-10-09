@@ -146,7 +146,7 @@ def test(test_loader, background_loader, network, output_dir):
         batch_time.update(time.time() - end)
 
         if not cfg.TEST.VISUALIZE:
-            result = {'labels': labels_out.detach().cpu().numpy(), 'rois': rois, 'poses': poses, 'poses_refined': poses_refined}
+            result = {'labels': out_label[0].detach().cpu().numpy(), 'rois': rois, 'poses': poses, 'poses_refined': poses_refined}
             if 'video_id' in sample and 'image_id' in sample:
                 filename = os.path.join(output_dir, sample['video_id'][0] + '_' + sample['image_id'][0] + '.mat')
             else:
