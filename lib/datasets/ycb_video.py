@@ -47,10 +47,12 @@ class YCBVideo(data.Dataset, datasets.imdb):
         self._image_set = image_set
         self._ycb_video_path = self._get_default_path() if ycb_video_path is None \
                             else ycb_video_path
-        if cfg.DATA_PATH == '' or cfg.MODE == 'TEST':
-            self._data_path = os.path.join(self._ycb_video_path, 'data')
-        else:
-            self._data_path = cfg.DATA_PATH
+
+        path = os.path.join(self._ycb_video_path, 'data')
+        if not os.path.exists(path):
+            path = os.path.join(self._ycb_video_path, 'YCB_Video_Dataset/YCB_Video_Dataset/YCB_Video_Dataset/data')
+        self._data_path = path
+
         self._model_path = os.path.join(datasets.ROOT_DIR, 'data', 'models')
 
         # define all the classes
