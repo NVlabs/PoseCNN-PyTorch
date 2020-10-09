@@ -16,10 +16,9 @@ ngc batch run \
     --result /result \
     --datasetid "58777:/posecnn/data/models" \
     --datasetid "58774:/posecnn/data/backgrounds" \
-    --datasetid "58730:/posecnn/data/shapenet" \
-    --datasetid "61572:/posecnn/data/shapenet_rendering" \
     --datasetid "8187:/posecnn/data/coco" \
-    --workspace posecnn:/posecnn \
-    --commandline "cd /posecnn; bash $SCRIPT" \
+    --datasetid "11888:/posecnn-release/data/YCB_Video/YCB_Video_Dataset" \
+    --workspace posecnn-release:/posecnn-release \
+    --commandline "cd /posecnn-release; bash $SCRIPT" \
     --total-runtime 7D \
     --port 6006

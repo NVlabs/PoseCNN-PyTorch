@@ -532,6 +532,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
             print('{} gt roidb loaded from {}'.format(self.name, cache_file))
             return roidb
 
+        print('loading gt...')
         gt_roidb = [self._load_ycb_video_annotation(index)
                     for index in self._image_index]
 
