@@ -397,11 +397,6 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
         for i in range(1, self.num_classes):
             print('%d %s [%d/%d]' % (i, self.classes[i], count[i], len(list(video_ids_selected))))
-
-        # sample a subset for training
-        if image_set == 'train':
-            image_index = image_index[::2]
-
         return image_index
 
 
