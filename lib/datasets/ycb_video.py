@@ -462,7 +462,10 @@ class YCBVideo(data.Dataset, datasets.imdb):
         Construct an image path from the image's "index" identifier.
         """
 
-        image_path = os.path.join(self._data_path, index + '-color' + self._image_ext)
+        image_path = os.path.join(self._data_path, index + '-color.jpg')
+        if not os.path.exists(image_path):
+            image_path = os.path.join(self._data_path, index + '-color.png')
+
         assert os.path.exists(image_path), \
                 'Path does not exist: {}'.format(image_path)
         return image_path
