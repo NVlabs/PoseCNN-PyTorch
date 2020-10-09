@@ -168,7 +168,7 @@ def train(train_loader, background_loader, network, optimizer, epoch):
         background_color = background['background_color'].cuda()
         for j in range(inputs.size(0)):
             is_syn = im_info[j, -1]
-            if is_syn or np.random.rand(1) > 0.5:
+            if is_syn:
                 inputs[j] = mask[j] * inputs[j] + (1 - mask[j]) * background_color[j]
 
         # visualization
