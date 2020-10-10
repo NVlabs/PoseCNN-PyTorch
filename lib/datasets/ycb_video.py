@@ -83,7 +83,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
         self._symmetry_test = self._symmetry_all[cfg.TEST.CLASSES]
         self._extents = self._extents_all[cfg.TRAIN.CLASSES]
         self._extents_test = self._extents_all[cfg.TEST.CLASSES]
-        self._pixel_mean = torch.tensor(cfg.PIXEL_MEANS / 255.0).cuda().float()
+        self._pixel_mean = cfg.PIXEL_MEANS / 255.0
 
         # train classes
         self._points, self._points_all, self._point_blob = \
@@ -112,11 +112,6 @@ class YCBVideo(data.Dataset, datasets.imdb):
         if self._size > cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH:
             self._size = cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH
         self._roidb = self.gt_roidb()
-        if cfg.MODE == 'TRAIN' or cfg.TEST.VISUALIZE:
-            self._perm = np.random.permutation(np.arange(len(self._roidb)))
-        else:
-            self._perm = np.arange(len(self._roidb))
-        self._cur = 0
 
         assert os.path.exists(self._ycb_video_path), \
                 'ycb_video path does not exist: {}'.format(self._ycb_video_path)
@@ -127,12 +122,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
     def __getitem__(self, index):
 
         is_syn = 0
-        if self._cur >= len(self._roidb):
-            self._perm = np.random.permutation(np.arange(len(self._roidb)))
-            self._cur = 0
-        db_ind = self._perm[self._cur]
-        roidb = self._roidb[db_ind]
-        self._cur += 1
+        roidb = self._roidb[index]
 
         # Get the input image blob
         random_scale_ind = npr.randint(0, high=len(cfg.TRAIN.SCALES_BASE))
@@ -189,12 +179,11 @@ class YCBVideo(data.Dataset, datasets.imdb):
         # chromatic transform
         if cfg.TRAIN.CHROMATIC and cfg.MODE == 'TRAIN' and np.random.rand(1) > 0.1:
             im = chromatic_transform(im)
-
-        im_cuda = torch.from_numpy(im).cuda().float() / 255.0
         if cfg.TRAIN.ADD_NOISE and cfg.MODE == 'TRAIN' and np.random.rand(1) > 0.1:
-            im_cuda = add_noise_cuda(im_cuda)
-        im_cuda -= self._pixel_mean
-        im_cuda = im_cuda.permute(2, 0, 1)
+            im = add_noise(im)
+        im_tensor = torch.from_numpy(im) / 255.0
+        im_tensor -= self._pixel_mean
+        image_blob = im_tensor.permute(2, 0, 1).float()
 
         # depth image
         im_depth = pad_im(cv2.imread(roidb['depth'], cv2.IMREAD_UNCHANGED), 16)
@@ -202,7 +191,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
             im_depth = cv2.resize(im_depth, None, None, fx=im_scale, fy=im_scale, interpolation=cv2.INTER_NEAREST)
         im_depth = im_depth.astype('float') / 10000.0
 
-        return im_cuda, im_depth, im_scale, height, width
+        return image_blob, im_depth, im_scale, height, width
 
 
     def _get_label_blob(self, roidb, num_classes, im_scale, height, width):
@@ -232,7 +221,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
         # foreground mask
         seg = torch.from_numpy((im_label != 0).astype(np.float32))
-        mask = seg.unsqueeze(0).repeat((3, 1, 1)).float().cuda()
+        mask = seg.unsqueeze(0).repeat((3, 1, 1)).float()
 
         # poses
         poses = meta_data['poses']

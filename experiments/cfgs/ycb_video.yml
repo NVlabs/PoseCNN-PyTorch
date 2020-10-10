@@ -58,7 +58,7 @@ TEST:
   HOUGH_SKIP_PIXELS: 10
   DET_THRESHOLD: 0.1
   SCALES_BASE: !!python/tuple [1.0]
-  VISUALIZE: False
+  VISUALIZE: True
   SYNTHESIZE: False
   POSE_REFINE: False
   ROS_CAMERA: camera

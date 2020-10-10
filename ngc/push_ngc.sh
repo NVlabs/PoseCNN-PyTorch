@@ -17,6 +17,7 @@ rsync -rlvcP \
   --exclude 'output' \
   --exclude 'run_steps' \
   --exclude 'experiments/logs' \
+  --exclude 'lib/utils/bbox.c' \
   --exclude '.ipynb_checkpoints' \
   --exclude '__pycache__' \
   --exclude '.cache' \

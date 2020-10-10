@@ -100,9 +100,9 @@ def train(train_loader, background_loader, network, optimizer, epoch):
         end = time.time()
 
         # prepare data
-        inputs = sample['image_color']
+        inputs = sample['image_color'].cuda()
         im_info = sample['im_info']
-        mask = sample['mask']
+        mask = sample['mask'].cuda()
         labels = sample['label'].cuda()
         meta_data = sample['meta_data'].cuda()
         extents = sample['extents'][0, :, :].repeat(cfg.TRAIN.GPUNUM, 1, 1).cuda()
