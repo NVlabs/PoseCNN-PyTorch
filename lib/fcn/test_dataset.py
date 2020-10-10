@@ -183,46 +183,33 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
         vertex_pred = out_vertex.detach().cpu().numpy()
 
     m = 4
-    n = 4
+    n = 3
     for i in range(im_blob.shape[0]):
         fig = plt.figure()
         start = 1
 
         # show image
-        if cfg.INPUT == 'COLOR' or cfg.INPUT == 'RGBD':
-            if cfg.INPUT == 'COLOR':
-                im = im_blob[i, :, :, :].copy()
-            else:
-                im = im_blob[i, :3, :, :].copy()
-            im = im.transpose((1, 2, 0)) * 255.0
-            im += cfg.PIXEL_MEANS
-            im = im[:, :, (2, 1, 0)]
-            im = im.astype(np.uint8)
-            ax = fig.add_subplot(m, n, 1)
-            plt.imshow(im)
-            ax.set_title('color')
-            start += 1
+        im = im_blob[i, :, :, :].copy()
+        im = im.transpose((1, 2, 0)) * 255.0
+        im += cfg.PIXEL_MEANS
+        im = im[:, :, (2, 1, 0)]
+        im = im.astype(np.uint8)
+        ax = fig.add_subplot(m, n, 1)
+        plt.imshow(im)
+        ax.set_title('color')
+        start += 1
 
-        if cfg.INPUT == 'DEPTH' or cfg.INPUT == 'RGBD':
-            if cfg.INPUT == 'DEPTH':
-                im_depth = im_blob[i, :, :, :].copy()
-            else:
-                im_depth = im_blob[i, 3:, :, :].copy()
-
-            ax = fig.add_subplot(m, n, start)
-            plt.imshow(im_depth[0, :, :])
-            ax.set_title('depth x')
-            start += 1
-
-            ax = fig.add_subplot(m, n, start)
-            plt.imshow(im_depth[1, :, :])
-            ax.set_title('depth y')
-            start += 1
-
-            ax = fig.add_subplot(m, n, start)
-            plt.imshow(im_depth[2, :, :])
-            ax.set_title('depth z')
-            start += 1
+        # show gt boxes
+        boxes = gt_boxes[i]
+        for j in range(boxes.shape[0]):
+            if boxes[j, 4] == 0:
+                continue
+            x1 = boxes[j, 0]
+            y1 = boxes[j, 1]
+            x2 = boxes[j, 2]
+            y2 = boxes[j, 3]
+            plt.gca().add_patch(
+                plt.Rectangle((x1, y1), x2-x1, y2-y1, fill=False, edgecolor='g', linewidth=3))
 
         # show gt label
         label_gt = label_blob[i, :, :, :]
@@ -254,34 +241,12 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
         plt.imshow(im_label)
         ax.set_title('predicted labels')
 
-        # show gt boxes
-        ax = fig.add_subplot(m, n, start)
-        start += 1
-        if cfg.INPUT == 'COLOR' or cfg.INPUT == 'RGBD':
-            plt.imshow(im)
-        else:
-            plt.imshow(im_depth[2, :, :])
-        ax.set_title('gt boxes') 
-        boxes = gt_boxes[i]
-        for j in range(boxes.shape[0]):
-            if boxes[j, 4] == 0:
-                continue
-            x1 = boxes[j, 0]
-            y1 = boxes[j, 1]
-            x2 = boxes[j, 2]
-            y2 = boxes[j, 3]
-            plt.gca().add_patch(
-                plt.Rectangle((x1, y1), x2-x1, y2-y1, fill=False, edgecolor='g', linewidth=3))
-
         if cfg.TRAIN.VERTEX_REG or cfg.TRAIN.VERTEX_REG_DELTA:
 
             # show predicted boxes
             ax = fig.add_subplot(m, n, start)
             start += 1
-            if cfg.INPUT == 'COLOR' or cfg.INPUT == 'RGBD':
-                plt.imshow(im)
-            else:
-                plt.imshow(im_depth[2, :, :])
+            plt.imshow(im)
 
             ax.set_title('predicted boxes')
             for j in range(rois.shape[0]):
@@ -303,10 +268,7 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
             ax = fig.add_subplot(m, n, start)
             start += 1
             ax.set_title('gt poses')
-            if cfg.INPUT == 'COLOR' or cfg.INPUT == 'RGBD':
-                plt.imshow(im)
-            else:
-                plt.imshow(im_depth[2, :, :])
+            plt.imshow(im)
 
             pose_blob = gt_poses[i]
             for j in range(pose_blob.shape[0]):
@@ -330,16 +292,13 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
                 x2d = np.matmul(intrinsic_matrix, np.matmul(RT, x3d))
                 x2d[0, :] = np.divide(x2d[0, :], x2d[2, :])
                 x2d[1, :] = np.divide(x2d[1, :], x2d[2, :])
-                plt.plot(x2d[0, :], x2d[1, :], '.', color=np.divide(class_colors[cls], 255.0), alpha=0.5)                    
+                plt.plot(x2d[0, :], x2d[1, :], '.', color=np.divide(class_colors[cls], 255.0), alpha=0.1)                    
 
             # show predicted poses
             ax = fig.add_subplot(m, n, start)
             start += 1
             ax.set_title('predicted poses')
-            if cfg.INPUT == 'COLOR' or cfg.INPUT == 'RGBD':
-                plt.imshow(im)
-            else:
-                plt.imshow(im_depth[2, :, :])
+            plt.imshow(im)
             for j in range(rois.shape[0]):
                 if rois[j, 0] != i:
                     continue
@@ -360,17 +319,14 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
                     x2d = np.matmul(intrinsic_matrix, np.matmul(RT, x3d))
                     x2d[0, :] = np.divide(x2d[0, :], x2d[2, :])
                     x2d[1, :] = np.divide(x2d[1, :], x2d[2, :])
-                    plt.plot(x2d[0, :], x2d[1, :], '.', color=np.divide(class_colors[cls], 255.0), alpha=0.5)
+                    plt.plot(x2d[0, :], x2d[1, :], '.', color=np.divide(class_colors[cls], 255.0), alpha=0.1)
 
             # show predicted refined poses
             if cfg.TEST.POSE_REFINE:
                 ax = fig.add_subplot(m, n, start)
                 start += 1
                 ax.set_title('predicted refined poses')
-                if cfg.INPUT == 'COLOR' or cfg.INPUT == 'RGBD':
-                    plt.imshow(im)
-                else:
-                    plt.imshow(im_depth[2, :, :])
+                plt.imshow(im)
                 for j in range(rois.shape[0]):
                     if rois[j, 0] != i:
                         continue
