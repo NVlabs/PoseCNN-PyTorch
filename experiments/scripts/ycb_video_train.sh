@@ -9,4 +9,4 @@ time ./tools/train_net.py \
   --dataset ycb_video_train \
   --cfg experiments/cfgs/ycb_video.yml \
   --solver sgd \
-  --epochs 8
+  --epochs 16

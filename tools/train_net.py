@@ -163,7 +163,7 @@ if __name__ == '__main__':
     for epoch in range(args.startepoch, args.epochs):
         if args.solver == 'sgd':
             scheduler.step()
-        
+
         train(dataloader, background_loader, network, optimizer, epoch)
 
         # save checkpoint
