@@ -375,7 +375,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
 
         # sample a subset for training
         if image_set == 'train':
-            image_index = image_index[::10]
+            image_index = image_index[::5]
 
         return image_index
 
