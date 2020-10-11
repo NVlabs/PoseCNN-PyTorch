@@ -4,7 +4,7 @@ TRAIN:
   TRAINABLE: True
   WEIGHT_DECAY: 0.0001
   LEARNING_RATE: 0.001
-  MILESTONES: !!python/tuple [6]
+  MILESTONES: !!python/tuple [12]
   MOMENTUM: 0.9
   BETA: 0.999
   GAMMA: 0.1

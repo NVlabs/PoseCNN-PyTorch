@@ -9,4 +9,4 @@ time ./tools/train_net.py \
   --dataset dex_ycb_s0_train \
   --cfg experiments/cfgs/dex_ycb.yml \
   --solver sgd \
-  --epochs 8
+  --epochs 16
