@@ -9,6 +9,7 @@ from .imdb import imdb
 from .ycb_video import YCBVideo
 from .ycb_self_supervision import YCBSelfSupervision
 from .ycb_object import YCBObject
+from .dex_ycb import DexYCBDataset
 from .background import BackgroundDataset
 
 import os.path as osp

@@ -12,6 +12,7 @@ __sets = {}
 import datasets.ycb_video
 import datasets.ycb_object
 import datasets.ycb_self_supervision
+import datasets.dex_ycb
 import datasets.background
 import numpy as np
 
@@ -43,6 +44,15 @@ for split in ['coco', 'rgbd', 'nvidia', 'table', 'isaac', 'texture']:
     print(name)
     __sets[name] = (lambda split=split:
             datasets.BackgroundDataset(split))
+
+
+# DEX YCB dataset
+for setup in ('s0', 's1', 's2', 's3'):
+  for split in ('train', 'val', 'test'):
+    if setup == 's1' and split == 'test':
+      continue
+    name = 'dex_ycb_{}_{}'.format(setup, split)
+    __sets[name] = (lambda setup=setup, split=split: datasets.DexYCBDataset(setup, split))
 
 
 def get_dataset(name):

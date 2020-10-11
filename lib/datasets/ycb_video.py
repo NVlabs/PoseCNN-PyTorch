@@ -23,22 +23,6 @@ from utils.se3 import *
 from utils.pose_error import *
 from utils.cython_bbox import bbox_overlaps
 
-def VOCap(rec, prec):
-    index = np.where(np.isfinite(rec))[0]
-    rec = rec[index]
-    prec = prec[index]
-    if len(rec) == 0 or len(prec) == 0:
-        ap = 0
-    else:
-        mrec = np.insert(rec, 0, 0)
-        mrec = np.append(mrec, 0.1)
-        mpre = np.insert(prec, 0, 0)
-        mpre = np.append(mpre, prec[-1])
-        for i in range(1, len(mpre)):
-            mpre[i] = max(mpre[i], mpre[i-1])
-        i = np.where(mrec[1:] != mrec[:-1])[0] + 1
-        ap = np.sum(np.multiply(mrec[i] - mrec[i-1], mpre[i])) * 10
-    return ap
 
 class YCBVideo(data.Dataset, datasets.imdb):
     def __init__(self, image_set, ycb_video_path = None):
