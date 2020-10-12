@@ -10,6 +10,7 @@ import numpy.random as npr
 import cv2
 import scipy.io
 import copy
+import glob
 try:
     import cPickle  # Use cPickle on Python 2.7
 except ImportError:
@@ -89,7 +90,6 @@ class YCBVideo(data.Dataset, datasets.imdb):
         self.model_colors_target = [np.array(self._class_colors_all[i]) / 255.0 for i in cfg.TRAIN.CLASSES[1:]]
 
         self._class_to_ind = dict(zip(self._classes, range(self._num_classes)))
-        self._image_ext = '.jpg'
         self._image_index = self._load_image_set_index(image_set)
 
         self._size = len(self._image_index)
@@ -116,6 +116,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
         label_blob, mask, meta_data_blob, pose_blob, gt_boxes, vertex_targets, vertex_weights \
             = self._get_label_blob(roidb, self._num_classes, im_scale, height, width)
 
+        is_syn = roidb['is_syn']
         im_info = np.array([im_blob.shape[1], im_blob.shape[2], im_scale, is_syn], dtype=np.float32)
 
         sample = {'image_color': im_blob,
@@ -377,6 +378,13 @@ class YCBVideo(data.Dataset, datasets.imdb):
         if image_set == 'train':
             image_index = image_index[::5]
 
+            # add synthetic data
+            filename = os.path.join(self._data_path + '_syn', '*.mat')
+            files = glob.glob(filename)
+            for i in range(len(files)):
+                filename = files[i].replace(self._data_path, '../data')[:-9]
+                image_index.append(filename)
+
         return image_index
 
 
@@ -541,6 +549,12 @@ class YCBVideo(data.Dataset, datasets.imdb):
         pos = index.find('/')
         video_id = index[:pos]
         image_id = index[pos+1:]
+
+        # is synthetic image or not
+        if 'data_syn' in image_path:
+            is_syn = 1
+        else:
+            is_syn = 0
         
         return {'image': image_path,
                 'depth': depth_path,
@@ -548,6 +562,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
                 'meta_data': metadata_path,
                 'video_id': video_id,
                 'image_id': image_id,
+                'is_syn': is_syn,
                 'flipped': False}
 
 
