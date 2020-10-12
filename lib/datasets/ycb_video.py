@@ -545,16 +545,17 @@ class YCBVideo(data.Dataset, datasets.imdb):
         # metadata path
         metadata_path = self.metadata_path_from_index(index)
 
-        # parse image name
-        pos = index.find('/')
-        video_id = index[:pos]
-        image_id = index[pos+1:]
-
         # is synthetic image or not
         if 'data_syn' in image_path:
             is_syn = 1
+            video_id = ''
+            image_id = ''
         else:
             is_syn = 0
+            # parse image name
+            pos = index.find('/')
+            video_id = index[:pos]
+            image_id = index[pos+1:]
         
         return {'image': image_path,
                 'depth': depth_path,
