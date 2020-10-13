@@ -381,6 +381,7 @@ class YCBVideo(data.Dataset, datasets.imdb):
             # add synthetic data
             filename = os.path.join(self._data_path + '_syn', '*.mat')
             files = glob.glob(filename)
+            print('adding synthetic %d data' % (len(files)))
             for i in range(len(files)):
                 filename = files[i].replace(self._data_path, '../data')[:-9]
                 image_index.append(filename)
