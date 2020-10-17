@@ -230,12 +230,12 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
 
         # sample a subset for training
         if split == 'train':
-            self._mapping = self._mapping[::10]
+            self._mapping = self._mapping[::5]
 
         # dataset size
         self._size = len(self._mapping)
         print('dataset %s with images %d' % (self._name, self._size))
-        if cfg.MODE == 'train' and self._size > cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH:
+        if cfg.MODE == 'TRAIN' and self._size > cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH:
             self._size = cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH
 
 
