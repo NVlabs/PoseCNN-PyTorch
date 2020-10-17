@@ -7,6 +7,9 @@ import torch.utils.data as data
 import numpy as np
 import numpy.random as npr
 import cv2
+import copy
+import glob
+import scipy
 
 import datasets
 from fcn.config import cfg
@@ -61,6 +64,7 @@ _YCB_CLASSES = [
     '061_foam_brick',
 ]
 
+_BOP_EVAL_SUBSAMPLING_FACTOR = 4
 
 class DexYCBDataset(data.Dataset, datasets.imdb):
 
@@ -231,7 +235,7 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
         # dataset size
         self._size = len(self._mapping)
         print('dataset %s with images %d' % (self._name, self._size))
-        if self._size > cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH:
+        if cfg.MODE == 'train' and self._size > cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH:
             self._size = cfg.TRAIN.MAX_ITERS_PER_EPOCH * cfg.TRAIN.IMS_PER_BATCH
 
 
@@ -239,8 +243,21 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
         return self._size
 
 
+    def get_bop_id_from_idx(self, idx):
+        s, c, f = map(lambda x: x.item(), self._mapping[idx])
+        scene_id = s * len(self._serials) + c
+        im_id = f
+        return scene_id, im_id
+
+
     def __getitem__(self, idx):
         s, c, f = self._mapping[idx]
+
+        is_testing = f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0
+        if self._split == 'test' and not is_testing:
+            sample = {'is_testing': is_testing}
+            return sample
+
         d = os.path.join(self._data_dir, self._sequences[s], self._serials[c])
         roidb = {
             'color_file': os.path.join(d, self._color_format.format(f)),
@@ -260,6 +277,9 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
 
         is_syn = 0
         im_info = np.array([im_blob.shape[1], im_blob.shape[2], im_scale, is_syn], dtype=np.float32)
+        scene_id, im_id = self.get_bop_id_from_idx(idx)
+        video_id = '%04d' % (scene_id)
+        image_id = '%06d' % (im_id)
 
         sample = {'image_color': im_blob,
                   'im_depth': im_depth,
@@ -271,11 +291,16 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
                   'points': self._point_blob,
                   'symmetry': self._symmetry,
                   'gt_boxes': gt_boxes,
-                  'im_info': im_info}
+                  'im_info': im_info,
+                  'video_id': video_id,
+                  'image_id': image_id}
 
         if cfg.TRAIN.VERTEX_REG:
             sample['vertex_targets'] = vertex_targets
             sample['vertex_weights'] = vertex_weights
+
+        if self._split == 'test':
+            sample['is_testing'] = is_testing
 
         return sample
 
@@ -512,3 +537,406 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
             else:
                 point_blob[i, :, :] = weight * point_blob[i, :, :]
         return points, points_all, point_blob
+
+
+    def write_dop_results(self, output_dir):
+        # only write the result file
+        filename = os.path.join(output_dir, self.name + '.csv')
+        f = open(filename, 'w')
+        f.write('scene_id,im_id,obj_id,score,R,t,time\n')
+
+        if cfg.TEST.POSE_REFINE:
+            filename_refined = os.path.join(output_dir, self.name + '_refined.csv')
+            f1 = open(filename_refined, 'w')
+            f1.write('scene_id,im_id,obj_id,score,R,t,time\n')
+
+        # list the mat file
+        images_color = []
+        filename = os.path.join(output_dir, '*.mat')
+        files = sorted(glob.glob(filename))
+
+        # for each image
+        for i in range(len(files)):
+            filename = os.path.basename(files[i])
+
+            # parse filename
+            pos = filename.find('_')
+            scene_id = int(filename[:pos])
+            im_id = int(filename[pos+1:-4])
+
+            # load result
+            print(files[i])
+            result = scipy.io.loadmat(files[i])
+            if len(result['rois']) == 0:
+                continue
+
+            rois = result['rois']
+            num = rois.shape[0]
+            for j in range(num):
+                obj_id = cfg.TRAIN.CLASSES[int(rois[j, 1])]
+                if obj_id == 0:
+                    continue
+                score = rois[j, -1]
+                run_time = -1
+
+                # pose from network
+                R = quat2mat(result['poses'][j, :4].flatten())
+                t = result['poses'][j, 4:]
+                line = '{scene_id},{im_id},{obj_id},{score},{R},{t},{time}\n'.format(
+                    scene_id=scene_id,
+                    im_id=im_id,
+                    obj_id=obj_id,
+                    score=score,
+                    R=' '.join(map(str, R.flatten().tolist())),
+                    t=' '.join(map(str, t.flatten().tolist())),
+                    time=run_time)
+                f.write(line)
+
+                if cfg.TEST.POSE_REFINE:
+                    R = quat2mat(result['poses_refined'][j, :4].flatten())
+                    t = result['poses_refined'][j, 4:]
+                    line = '{scene_id},{im_id},{obj_id},{score},{R},{t},{time}\n'.format(
+                        scene_id=scene_id,
+                        im_id=im_id,
+                        obj_id=obj_id,
+                        score=score,
+                        R=' '.join(map(str, R.flatten().tolist())),
+                        t=' '.join(map(str, t.flatten().tolist())),
+                        time=run_time)
+                    f1.write(line)
+
+        # close file
+        f.close()
+        if cfg.TEST.POSE_REFINE:
+            f1.close()
+
+
+    # compute box
+    def compute_box(self, cls, intrinsic_matrix, RT):
+        classes = np.array(cfg.TRAIN.CLASSES)
+        ind = np.where(classes == cls)[0]
+        x3d = np.ones((4, self._points_all.shape[1]), dtype=np.float32)
+        x3d[0, :] = self._points_all[ind,:,0]
+        x3d[1, :] = self._points_all[ind,:,1]
+        x3d[2, :] = self._points_all[ind,:,2]
+        x2d = np.matmul(intrinsic_matrix, np.matmul(RT, x3d))
+        x2d[0, :] = np.divide(x2d[0, :], x2d[2, :])
+        x2d[1, :] = np.divide(x2d[1, :], x2d[2, :])
+        x1 = np.min(x2d[0, :])
+        y1 = np.min(x2d[1, :])
+        x2 = np.max(x2d[0, :])
+        y2 = np.max(x2d[1, :])
+        return [x1, y1, x2, y2]
+
+
+    def evaluation(self, output_dir):
+        self.write_dop_results(output_dir)
+
+        filename = os.path.join(output_dir, 'results_posecnn.mat')
+        if os.path.exists(filename):
+            results_all = scipy.io.loadmat(filename)
+            print('load results from file')
+            print(filename)
+            distances_sys = results_all['distances_sys']
+            distances_non = results_all['distances_non']
+            errors_rotation = results_all['errors_rotation']
+            errors_translation = results_all['errors_translation']
+            results_seq_id = results_all['results_seq_id'].flatten()
+            results_frame_id = results_all['results_frame_id'].flatten()
+            results_object_id = results_all['results_object_id'].flatten()
+            results_cls_id = results_all['results_cls_id'].flatten()
+        else:
+            # save results
+            num_max = 100000
+            num_results = 2
+            distances_sys = np.zeros((num_max, num_results), dtype=np.float32)
+            distances_non = np.zeros((num_max, num_results), dtype=np.float32)
+            errors_rotation = np.zeros((num_max, num_results), dtype=np.float32)
+            errors_translation = np.zeros((num_max, num_results), dtype=np.float32)
+            results_seq_id = np.zeros((num_max, ), dtype=np.float32)
+            results_frame_id = np.zeros((num_max, ), dtype=np.float32)
+            results_object_id = np.zeros((num_max, ), dtype=np.float32)
+            results_cls_id = np.zeros((num_max, ), dtype=np.float32)
+
+            # for each image
+            count = -1
+            for i in range(len(self._mapping)):
+
+                s, c, f = self._mapping[i]
+                is_testing = f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0
+                if not is_testing:
+                    continue
+
+                # intrinsics
+                intrinsics = self._intrinsics[c]
+                intrinsic_matrix = np.eye(3, dtype=np.float32)
+                intrinsic_matrix[0, 0] = intrinsics['fx']
+                intrinsic_matrix[1, 1] = intrinsics['fy']
+                intrinsic_matrix[0, 2] = intrinsics['ppx']
+                intrinsic_matrix[1, 2] = intrinsics['ppy']
+
+                # parse keyframe name
+                scene_id, im_id = self.get_bop_id_from_idx(i)
+
+                # load result
+                filename = os.path.join(output_dir, '%04d_%06d.mat' % (scene_id, im_id))
+                print(filename)
+                result = scipy.io.loadmat(filename)
+
+                # load gt
+                d = os.path.join(self._data_dir, self._sequences[s], self._serials[c])
+                label_file = os.path.join(d, self._label_format.format(f))
+                label = np.load(label_file)
+                cls_indexes = np.array(self._ycb_ids[s]).flatten()
+
+                # poses
+                poses = label['pose_y']
+                if len(poses.shape) == 2:
+                    poses = np.reshape(poses, (1, 3, 4))
+                num = poses.shape[0]
+                assert num == len(cls_indexes), 'number of poses not equal to number of objects'
+
+                # instance label
+                im_label = label['seg']
+                instance_ids = np.unique(im_label)
+                if instance_ids[0] == 0:
+                    instance_ids = instance_ids[1:]
+                if instance_ids[-1] == 255:
+                    instance_ids = instance_ids[:-1]
+
+                # for each gt poses
+                for j in range(len(instance_ids)):
+                    cls = instance_ids[j]
+
+                    # find the number of pixels of the object
+                    pixels = np.sum(im_label == cls)
+                    if pixels < 200:
+                        continue
+                    count += 1
+
+                    # find the pose
+                    object_index = np.where(cls_indexes == cls)[0][0]
+                    RT_gt = poses[object_index, :, :]
+                    box_gt = self.compute_box(cls, intrinsic_matrix, RT_gt)
+
+                    results_seq_id[count] = scene_id
+                    results_frame_id[count] = im_id
+                    results_object_id[count] = object_index
+                    results_cls_id[count] = cls
+
+                    # network result
+                    roi_index = []
+                    if len(result['rois']) > 0:
+                        for k in range(result['rois'].shape[0]):
+                            ind = int(result['rois'][k, 1])
+                            if cls == cfg.TRAIN.CLASSES[ind]:
+                                roi_index.append(k)
+
+                    # select the roi
+                    if len(roi_index) > 1:
+                        # overlaps: (rois x gt_boxes)
+                        roi_blob = result['rois'][roi_index, :]
+                        roi_blob = roi_blob[:, (0, 2, 3, 4, 5, 1)]
+                        gt_box_blob = np.zeros((1, 5), dtype=np.float32)
+                        gt_box_blob[0, 1:] = box_gt
+                        overlaps = bbox_overlaps(
+                            np.ascontiguousarray(roi_blob[:, :5], dtype=np.float),
+                            np.ascontiguousarray(gt_box_blob, dtype=np.float)).flatten()
+                        assignment = overlaps.argmax()
+                        roi_index = [roi_index[assignment]]
+
+                    if len(roi_index) > 0:
+                        RT = np.zeros((3, 4), dtype=np.float32)
+                        ind = int(result['rois'][roi_index, 1])
+                        points = self._points[ind]
+
+                        # pose from network
+                        RT[:3, :3] = quat2mat(result['poses'][roi_index, :4].flatten())
+                        RT[:, 3] = result['poses'][roi_index, 4:]
+                        distances_sys[count, 0] = adi(RT[:3, :3], RT[:, 3],  RT_gt[:3, :3], RT_gt[:, 3], points)
+                        distances_non[count, 0] = add(RT[:3, :3], RT[:, 3],  RT_gt[:3, :3], RT_gt[:, 3], points)
+                        errors_rotation[count, 0] = re(RT[:3, :3], RT_gt[:3, :3])
+                        errors_translation[count, 0] = te(RT[:, 3], RT_gt[:, 3])
+
+                        # pose after depth refinement
+                        if cfg.TEST.POSE_REFINE:
+                            RT[:3, :3] = quat2mat(result['poses_refined'][roi_index, :4].flatten())
+                            RT[:, 3] = result['poses_refined'][roi_index, 4:]
+                            distances_sys[count, 1] = adi(RT[:3, :3], RT[:, 3],  RT_gt[:3, :3], RT_gt[:, 3], points)
+                            distances_non[count, 1] = add(RT[:3, :3], RT[:, 3],  RT_gt[:3, :3], RT_gt[:, 3], points)
+                            errors_rotation[count, 1] = re(RT[:3, :3], RT_gt[:3, :3])
+                            errors_translation[count, 1] = te(RT[:, 3], RT_gt[:, 3])
+                        else:
+                            distances_sys[count, 1] = np.inf
+                            distances_non[count, 1] = np.inf
+                            errors_rotation[count, 1] = np.inf
+                            errors_translation[count, 1] = np.inf
+                    else:
+                        distances_sys[count, :] = np.inf
+                        distances_non[count, :] = np.inf
+                        errors_rotation[count, :] = np.inf
+                        errors_translation[count, :] = np.inf
+
+            distances_sys = distances_sys[:count+1, :]
+            distances_non = distances_non[:count+1, :]
+            errors_rotation = errors_rotation[:count+1, :]
+            errors_translation = errors_translation[:count+1, :]
+            results_seq_id = results_seq_id[:count+1]
+            results_frame_id = results_frame_id[:count+1]
+            results_object_id = results_object_id[:count+1]
+            results_cls_id = results_cls_id[:count+1]
+
+            results_all = {'distances_sys': distances_sys,
+                       'distances_non': distances_non,
+                       'errors_rotation': errors_rotation,
+                       'errors_translation': errors_translation,
+                       'results_seq_id': results_seq_id,
+                       'results_frame_id': results_frame_id,
+                       'results_object_id': results_object_id,
+                       'results_cls_id': results_cls_id }
+
+            filename = os.path.join(output_dir, 'results_posecnn.mat')
+            scipy.io.savemat(filename, results_all)
+
+        # print the results
+        # for each class
+        import matplotlib.pyplot as plt
+        max_distance = 0.1
+        index_plot = [0, 1]
+        color = ['r', 'b']
+        leng = ['PoseCNN', 'PoseCNN refined']
+        num = len(leng)
+        ADD = np.zeros((self._num_classes_all, num), dtype=np.float32)
+        ADDS = np.zeros((self._num_classes_all, num), dtype=np.float32)
+        TS = np.zeros((self._num_classes_all, num), dtype=np.float32)
+        classes = list(copy.copy(self._classes_all))
+        classes[0] = 'all'
+        for k in range(self._num_classes_all):
+            fig = plt.figure(figsize=(16.0, 10.0))
+            if k == 0:
+                index = range(len(results_cls_id))
+            else:
+                index = np.where(results_cls_id == k)[0]
+
+            if len(index) == 0:
+                continue
+            print('%s: %d objects' % (classes[k], len(index)))
+
+            # distance symmetry
+            ax = fig.add_subplot(2, 3, 1)
+            lengs = []
+            for i in index_plot:
+                D = distances_sys[index, i]
+                ind = np.where(D > max_distance)[0]
+                D[ind] = np.inf
+                d = np.sort(D)
+                n = len(d)
+                accuracy = np.cumsum(np.ones((n, ), np.float32)) / n
+                plt.plot(d, accuracy, color[i], linewidth=2)
+                ADDS[k, i] = VOCap(d, accuracy)
+                lengs.append('%s (%.2f)' % (leng[i], ADDS[k, i] * 100))
+                print('%s, %s: %d objects missed' % (classes[k], leng[i], np.sum(np.isinf(D))))
+
+            ax.legend(lengs)
+            plt.xlabel('Average distance threshold in meter (symmetry)')
+            plt.ylabel('accuracy')
+            ax.set_title(classes[k])
+
+            # distance non-symmetry
+            ax = fig.add_subplot(2, 3, 2)
+            lengs = []
+            for i in index_plot:
+                D = distances_non[index, i]
+                ind = np.where(D > max_distance)[0]
+                D[ind] = np.inf
+                d = np.sort(D)
+                n = len(d)
+                accuracy = np.cumsum(np.ones((n, ), np.float32)) / n
+                plt.plot(d, accuracy, color[i], linewidth=2)
+                ADD[k, i] = VOCap(d, accuracy)
+                lengs.append('%s (%.2f)' % (leng[i], ADD[k, i] * 100))
+                print('%s, %s: %d objects missed' % (classes[k], leng[i], np.sum(np.isinf(D))))
+
+            ax.legend(lengs)
+            plt.xlabel('Average distance threshold in meter (non-symmetry)')
+            plt.ylabel('accuracy')
+            ax.set_title(classes[k])
+
+            # translation
+            ax = fig.add_subplot(2, 3, 3)
+            lengs = []
+            for i in index_plot:
+                D = errors_translation[index, i]
+                ind = np.where(D > max_distance)[0]
+                D[ind] = np.inf
+                d = np.sort(D)
+                n = len(d)
+                accuracy = np.cumsum(np.ones((n, ), np.float32)) / n
+                plt.plot(d, accuracy, color[i], linewidth=2)
+                TS[k, i] = VOCap(d, accuracy)
+                lengs.append('%s (%.2f)' % (leng[i], TS[k, i] * 100))
+                print('%s, %s: %d objects missed' % (classes[k], leng[i], np.sum(np.isinf(D))))
+
+            ax.legend(lengs)
+            plt.xlabel('Translation threshold in meter')
+            plt.ylabel('accuracy')
+            ax.set_title(classes[k])
+
+            # rotation histogram
+            count = 4
+            for i in index_plot:
+                ax = fig.add_subplot(2, 3, count)
+                D = errors_rotation[index, i]
+                ind = np.where(np.isfinite(D))[0]
+                D = D[ind]
+                ax.hist(D, bins=range(0, 190, 10), range=(0, 180))
+                plt.xlabel('Rotation angle error')
+                plt.ylabel('count')
+                ax.set_title(leng[i])
+                count += 1
+
+            # mng = plt.get_current_fig_manager()
+            # mng.full_screen_toggle()
+            filename = output_dir + '/' + classes[k] + '.png'
+            # plt.show()
+            plt.savefig(filename)
+
+        # print ADD
+        print('==================ADD======================')
+        for k in range(len(classes)):
+            print('%s: %f' % (classes[k], ADD[k, 0]))
+        for k in range(len(classes)-1):
+            print('%f' % (ADD[k+1, 0]))
+        print('%f' % (ADD[0, 0]))
+        print(cfg.TRAIN.SNAPSHOT_INFIX)
+        print('===========================================')
+
+        # print ADD-S
+        print('==================ADD-S====================')
+        for k in range(len(classes)):
+            print('%s: %f' % (classes[k], ADDS[k, 0]))
+        for k in range(len(classes)-1):
+            print('%f' % (ADDS[k+1, 0]))
+        print('%f' % (ADDS[0, 0]))
+        print(cfg.TRAIN.SNAPSHOT_INFIX)
+        print('===========================================')
+
+        # print ADD
+        print('==================ADD refined======================')
+        for k in range(len(classes)):
+            print('%s: %f' % (classes[k], ADD[k, 1]))
+        for k in range(len(classes)-1):
+            print('%f' % (ADD[k+1, 1]))
+        print('%f' % (ADD[0, 1]))
+        print(cfg.TRAIN.SNAPSHOT_INFIX)
+        print('===========================================')
+
+        # print ADD-S
+        print('==================ADD-S refined====================')
+        for k in range(len(classes)):
+            print('%s: %f' % (classes[k], ADDS[k, 1]))
+        for k in range(len(classes)-1):
+            print('%f' % (ADDS[k+1, 1]))
+        print('%f' % (ADDS[0, 1]))
+        print(cfg.TRAIN.SNAPSHOT_INFIX)
+        print('===========================================')

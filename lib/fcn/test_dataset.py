@@ -54,6 +54,9 @@ def test(test_loader, background_loader, network, output_dir):
 
     for i, sample in enumerate(test_loader):
 
+        if 'is_testing' in sample and sample['is_testing'] == 0:
+            continue
+
         end = time.time()
 
         inputs = sample['image_color']
@@ -183,7 +186,7 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
         vertex_pred = out_vertex.detach().cpu().numpy()
 
     m = 4
-    n = 3
+    n = 4
     for i in range(im_blob.shape[0]):
         fig = plt.figure()
         start = 1
@@ -345,7 +348,7 @@ def _vis_test(inputs, labels, out_label, out_vertex, rois, poses, poses_refined,
                         x2d = np.matmul(intrinsic_matrix, np.matmul(RT, x3d))
                         x2d[0, :] = np.divide(x2d[0, :], x2d[2, :])
                         x2d[1, :] = np.divide(x2d[1, :], x2d[2, :])
-                        plt.plot(x2d[0, :], x2d[1, :], '.', color=np.divide(class_colors[cls], 255.0), alpha=0.5)
+                        plt.plot(x2d[0, :], x2d[1, :], '.', color=np.divide(class_colors[cls], 255.0), alpha=0.1)
 
             # show gt vertex targets
             vertex_target = vertex_targets[i, :, :, :]

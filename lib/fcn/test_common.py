@@ -30,7 +30,7 @@ def compute_index_sdf(rois):
     return index_sdf
 
 # SDF refinement
-def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=True):
+def refine_pose(im_label, im_depth, rois, poses, meta_data, dataset, visualize=False):
 
     start_time = time.time()
     width = im_depth.shape[1]
