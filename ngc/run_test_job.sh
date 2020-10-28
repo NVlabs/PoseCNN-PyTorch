@@ -14,6 +14,6 @@ ngc batch run \
     --datasetid "58774:/posecnn-release/data/backgrounds" \
     --datasetid "8187:/posecnn-release/data/coco" \
     --datasetid "11888:/posecnn-release/data/YCB_Video/YCB_Video_Dataset" \
-    --datasetid "67290:/posecnn-release/data/DEX_YCB/data" \
+    --datasetid "68150:/posecnn-release/data/DEX_YCB/data" \
     --workspace posecnn-release:/posecnn-release \
     --commandline "sleep 168h"

@@ -26,6 +26,10 @@ _SUBJECTS = [
     '20200903-ynarang',
     '20200908-yux',
     '20200918-ftozetoramos',
+    '20200928-ahanda',
+    '20201002-dieterf',
+    '20201015-ychao',
+    '20201022-lmanuelli',
 ]
 
 _SERIALS = [
@@ -39,29 +43,60 @@ _SERIALS = [
     '932122062010',
 ]
 
-_YCB_CLASSES = [
-    '__background__',
-    '002_master_chef_can',
-    '003_cracker_box',
-    '004_sugar_box',
-    '005_tomato_soup_can',
-    '006_mustard_bottle',
-    '007_tuna_fish_can',
-    '008_pudding_box',
-    '009_gelatin_box',
-    '010_potted_meat_can',
-    '011_banana',
-    '019_pitcher_base',
-    '021_bleach_cleanser',
-    '024_bowl',
-    '025_mug',
-    '035_power_drill',
-    '036_wood_block',
-    '037_scissors',
-    '040_large_marker',
-    '051_large_clamp',
-    '052_extra_large_clamp',
-    '061_foam_brick',
+_YCB_CLASSES = {
+     1: '002_master_chef_can',
+     2: '003_cracker_box',
+     3: '004_sugar_box',
+     4: '005_tomato_soup_can',
+     5: '006_mustard_bottle',
+     6: '007_tuna_fish_can',
+     7: '008_pudding_box',
+     8: '009_gelatin_box',
+     9: '010_potted_meat_can',
+    10: '011_banana',
+    11: '019_pitcher_base',
+    12: '021_bleach_cleanser',
+    13: '024_bowl',
+    14: '025_mug',
+    15: '035_power_drill',
+    16: '036_wood_block',
+    17: '037_scissors',
+    18: '040_large_marker',
+    19: '051_large_clamp',
+    20: '052_extra_large_clamp',
+    21: '061_foam_brick',
+}
+
+_MANO_JOINTS = [
+    'wrist',
+    'thumb_mcp',
+    'thumb_pip',
+    'thumb_dip',
+    'thumb_tip',
+    'index_mcp',
+    'index_pip',
+    'index_dip',
+    'index_tip',
+    'middle_mcp',
+    'middle_pip',
+    'middle_dip',
+    'middle_tip',
+    'ring_mcp',
+    'ring_pip',
+    'ring_dip',
+    'ring_tip',
+    'little_mcp',
+    'little_pip',
+    'little_dip',
+    'little_tip'
+]
+
+_MANO_JOINT_CONNECT = [
+    [0,  1], [ 1,  2], [ 2,  3], [ 3,  4],
+    [0,  5], [ 5,  6], [ 6,  7], [ 7,  8],
+    [0,  9], [ 9, 10], [10, 11], [11, 12],
+    [0, 13], [13, 14], [14, 15], [15, 16],
+    [0, 17], [17, 18], [18, 19], [19, 20],
 ]
 
 _BOP_EVAL_SUBSAMPLING_FACTOR = 4
@@ -85,10 +120,11 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
         self._data_dir = path
         self._calib_dir = os.path.join(self._data_dir, "calibration")
         self._model_dir = os.path.join(self._data_dir, "models")
-        self._obj_file = [
-            os.path.join(self._model_dir, x, "textured_simple.obj")
-            for x in _YCB_CLASSES
-        ]
+
+        self._obj_file = {
+            k: os.path.join(self._model_dir, v, "textured_simple.obj")
+            for k, v in _YCB_CLASSES.items()
+        }
 
         # define all the classes
         self._classes_all = ('__background__', '002_master_chef_can', '003_cracker_box', '004_sugar_box', '005_tomato_soup_can', '006_mustard_bottle', \
@@ -136,58 +172,62 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
         # Seen subjects, camera views, grasped objects.
         if self._setup == 's0':
             if self._split == 'train':
-                subject_ind = [0, 1, 2, 3, 4, 5]
+                subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
                 sequence_ind = [i for i in range(100) if i % 5 != 4]
             if self._split == 'val':
-                subject_ind = [5]
+                subject_ind = [0, 1]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
                 sequence_ind = [i for i in range(100) if i % 5 == 4]
             if self._split == 'test':
-                subject_ind = [0, 1, 2, 3, 4]
+                subject_ind = [2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
                 sequence_ind = [i for i in range(100) if i % 5 == 4]
 
         # Unseen subjects.
         if self._setup == 's1':
             if self._split == 'train':
-                subject_ind = [0, 1, 2, 3, 4]
+                subject_ind = [0, 1, 2, 3, 4, 5, 9]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
                 sequence_ind = list(range(100))
             if self._split == 'val':
-                subject_ind = [5]
+                subject_ind = [6]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
                 sequence_ind = list(range(100))
             if self._split == 'test':
-                raise NotImplementedError
+                subject_ind = [7, 8]
+                serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
+                sequence_ind = list(range(100))
 
         # Unseen camera views.
         if self._setup == 's2':
             if self._split == 'train':
-                subject_ind = [0, 1, 2, 3, 4, 5]
+                subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [0, 1, 2, 3, 4, 5]
                 sequence_ind = list(range(100))
             if self._split == 'val':
-                subject_ind = [0, 1, 2, 3, 4, 5]
+                subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [6]
                 sequence_ind = list(range(100))
             if self._split == 'test':
-                subject_ind = [0, 1, 2, 3, 4, 5]
+                subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [7]
                 sequence_ind = list(range(100))
 
         # Unseen grasped objects.
         if self._setup == 's3':
             if self._split == 'train':
-                subject_ind = [0, 1, 2, 3, 4, 5]
+                subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
-                sequence_ind = [i for i in range(100) if i // 5 not in (3, 7, 11, 15, 19)]
+                sequence_ind = [
+                    i for i in range(100) if i // 5 not in (3, 7, 11, 15, 19)
+                ]
             if self._split == 'val':
-                subject_ind = [0, 1, 2, 3, 4, 5]
+                subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
                 sequence_ind = [i for i in range(100) if i // 5 in (3, 19)]
             if self._split == 'test':
-                subject_ind = [0, 1, 2, 3, 4, 5]
+                subject_ind = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 serial_ind = [0, 1, 2, 3, 4, 5, 6, 7]
                 sequence_ind = [i for i in range(100) if i // 5 in (7, 11, 15)]
 

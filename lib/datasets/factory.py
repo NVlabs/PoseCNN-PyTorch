@@ -48,11 +48,9 @@ for split in ['coco', 'rgbd', 'nvidia', 'table', 'isaac', 'texture']:
 
 # DEX YCB dataset
 for setup in ('s0', 's1', 's2', 's3'):
-  for split in ('train', 'val', 'test'):
-    if setup == 's1' and split == 'test':
-      continue
-    name = 'dex_ycb_{}_{}'.format(setup, split)
-    __sets[name] = (lambda setup=setup, split=split: datasets.DexYCBDataset(setup, split))
+    for split in ('train', 'val', 'test'):
+        name = 'dex_ycb_{}_{}'.format(setup, split)
+        __sets[name] = (lambda setup=setup, split=split: datasets.DexYCBDataset(setup, split))
 
 
 def get_dataset(name):
