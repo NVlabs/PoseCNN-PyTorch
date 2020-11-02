@@ -581,12 +581,12 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
 
     def write_dop_results(self, output_dir):
         # only write the result file
-        filename = os.path.join(output_dir, self.name + '.csv')
+        filename = os.path.join(output_dir, 'posecnn_' + self.name + '.csv')
         f = open(filename, 'w')
         f.write('scene_id,im_id,obj_id,score,R,t,time\n')
 
         if cfg.TEST.POSE_REFINE:
-            filename_refined = os.path.join(output_dir, self.name + '_refined.csv')
+            filename_refined = os.path.join(output_dir, 'posecnn_' + self.name + '_refined.csv')
             f1 = open(filename_refined, 'w')
             f1.write('scene_id,im_id,obj_id,score,R,t,time\n')
 
@@ -687,7 +687,7 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
             results_cls_id = results_all['results_cls_id'].flatten()
         else:
             # save results
-            num_max = 100000
+            num_max = 200000
             num_results = 2
             distances_sys = np.zeros((num_max, num_results), dtype=np.float32)
             distances_non = np.zeros((num_max, num_results), dtype=np.float32)
