@@ -116,7 +116,9 @@ if __name__ == '__main__':
         print(dataset._intrinsic_matrix)
 
     # output directory
+    cfg.TEST.MODEL = args.pretrained.split('/')[-1]
     output_dir = get_output_dir(dataset, None)
+    output_dir = os.path.join(output_dir, cfg.TEST.MODEL)
     print('Output will be saved to `{:s}`'.format(output_dir))
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
