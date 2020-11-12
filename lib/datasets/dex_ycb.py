@@ -294,10 +294,6 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
         s, c, f = self._mapping[idx]
 
         is_testing = f % _BOP_EVAL_SUBSAMPLING_FACTOR == 0
-        if self._split == 'test' and not is_testing:
-            sample = {'is_testing': is_testing}
-            return sample
-
         d = os.path.join(self._data_dir, self._sequences[s], self._serials[c])
         roidb = {
             'color_file': os.path.join(d, self._color_format.format(f)),

@@ -54,8 +54,8 @@ def test(test_loader, background_loader, network, output_dir):
 
     for i, sample in enumerate(test_loader):
 
-        if 'is_testing' in sample and sample['is_testing'] == 0:
-            continue
+        # if 'is_testing' in sample and sample['is_testing'] == 0:
+        #    continue
 
         end = time.time()
 
