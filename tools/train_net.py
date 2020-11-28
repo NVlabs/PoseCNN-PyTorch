@@ -91,7 +91,10 @@ if __name__ == '__main__':
     cfg.MODE = 'TRAIN'
     dataset = get_dataset(args.dataset_name)
     worker_init_fn = dataset.worker_init_fn if hasattr(dataset, 'worker_init_fn') else None
-    num_workers = 4
+    if cfg.TRAIN.SYNTHESIZE:
+        num_workers = 0
+    else:
+        num_workers = 4
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=cfg.TRAIN.IMS_PER_BATCH, shuffle=True, 
         num_workers=num_workers, worker_init_fn=worker_init_fn)
     print('Use dataset `{:s}` for training'.format(dataset.name))
