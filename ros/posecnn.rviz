@@ -1,0 +1,354 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 0
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Status1
+        - /DepthCloud1
+        - /DepthCloud1/Auto Size1
+        - /rgb_input1
+        - /depth_input1
+        - /posecnn detection1
+        - /posecnn1
+        - /TF1
+        - /TF1/Frames1
+        - /DepthCloud2
+        - /DepthCloud2/Auto Size1
+        - /posecnn+sdf1
+      Splitter Ratio: 0.510638297
+    Tree Height: 458
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.588679016
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: rgb_input
+Toolbars:
+  toolButtonStyle: 2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.0299999993
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Auto Size:
+        Auto Size Factor: 1
+        Value: true
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/DepthCloud
+      Color: 255; 255; 255
+      Color Image Topic: /camera/color/image_raw
+      Color Transformer: RGB8
+      Color Transport Hint: raw
+      Decay Time: 0
+      Depth Map Topic: /camera/aligned_depth_to_color/image_raw
+      Depth Map Transport Hint: raw
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: DepthCloud
+      Occlusion Compensation:
+        Occlusion Time-Out: 30
+        Value: false
+      Position Transformer: XYZ
+      Queue Size: 5
+      Selectable: true
+      Size (Pixels): 3
+      Style: Flat Squares
+      Topic Filter: true
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /camera/color/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: rgb_input
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /camera/aligned_depth_to_color/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: depth_input
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /posecnn_label_00
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: posecnn detection
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /posecnn_pose_00
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: posecnn
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        camera_color_optical_frame:
+          Value: true
+        measured/camera_aligned_depth_to_color_frame:
+          Value: true
+        measured/camera_aligned_depth_to_infra1_frame:
+          Value: true
+        measured/camera_color_frame:
+          Value: true
+        measured/camera_color_optical_frame:
+          Value: true
+        measured/camera_depth_frame:
+          Value: true
+        measured/camera_depth_optical_frame:
+          Value: true
+        measured/camera_infra1_frame:
+          Value: true
+        measured/camera_infra1_optical_frame:
+          Value: true
+        measured/camera_infra2_frame:
+          Value: true
+        measured/camera_infra2_optical_frame:
+          Value: true
+        measured/camera_link:
+          Value: true
+        posecnn/00_extra_large_clamp_01:
+          Value: true
+        posecnn/00_extra_large_clamp_01_roi:
+          Value: true
+        posecnn/00_potted_meat_can_01:
+          Value: true
+        posecnn/00_potted_meat_can_01_roi:
+          Value: true
+        posecnn/00_pudding_box_01:
+          Value: true
+        posecnn/00_pudding_box_01_roi:
+          Value: true
+        posecnn/00_sugar_box_01:
+          Value: true
+        posecnn/00_sugar_box_01_roi:
+          Value: true
+        posecnn/00_tomato_soup_can_01:
+          Value: true
+        posecnn/00_tomato_soup_can_01_roi:
+          Value: true
+        posecnn/00_tomato_soup_can_02:
+          Value: true
+        posecnn/00_tomato_soup_can_02_roi:
+          Value: true
+        posecnn/00_wood_block_01:
+          Value: true
+        posecnn/00_wood_block_01_roi:
+          Value: true
+      Marker Scale: 0.5
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+      Tree:
+        measured/camera_link:
+          measured/camera_aligned_depth_to_color_frame:
+            measured/camera_color_optical_frame:
+              {}
+          measured/camera_aligned_depth_to_infra1_frame:
+            measured/camera_infra1_optical_frame:
+              {}
+          measured/camera_color_frame:
+            {}
+          measured/camera_depth_frame:
+            measured/camera_depth_optical_frame:
+              {}
+          measured/camera_infra1_frame:
+            {}
+          measured/camera_infra2_frame:
+            measured/camera_infra2_optical_frame:
+              {}
+      Update Interval: 0
+      Value: true
+    - Alpha: 1
+      Auto Size:
+        Auto Size Factor: 1
+        Value: true
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/DepthCloud
+      Color: 255; 255; 255
+      Color Image Topic: /camera/color/image_raw
+      Color Transformer: RGB8
+      Color Transport Hint: raw
+      Decay Time: 0
+      Depth Map Topic: /camera/aligned_depth_to_color/image_raw
+      Depth Map Transport Hint: raw
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: DepthCloud
+      Occlusion Compensation:
+        Occlusion Time-Out: 30
+        Value: false
+      Position Transformer: XYZ
+      Queue Size: 5
+      Selectable: true
+      Size (Pixels): 3
+      Style: Flat Squares
+      Topic Filter: true
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /posecnn_pose_refined_00
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: posecnn+sdf
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: measured/camera_color_optical_frame
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Topic: /initialpose
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 17.5304871
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.0599999987
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0.70302552
+        Y: -0.0904975459
+        Z: -0.101086579
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.0500000007
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.00999999978
+      Pitch: 0.434797138
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 5.08401203
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1176
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd00000004000000000000024300000216fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006600fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000021200000216000000e200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000037f000000b7000000000000000000000001000001ee000001f9fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc0000023d000001f90000000000fffffffa000000000100000002fb0000000a0049006d0061006700650100000000ffffffff0000000000000000fb0000000a005600690065007700730000000551000001ee0000011e00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000073f000001e4fc010000000dfb000000220070006f007300650063006e006e00200064006500740065006300740069006f006e01000000000000017e000000db00fffffffb0000000e0070006f007300650063006e006e0100000184000001780000007e00fffffffb0000000a0049006d00610067006501000003e7000001a70000000000000000fb000000160070006f007300650063006e006e002b0073006400660100000281000002430000000000000000fb000000160070006f007300650063006e006e002b007300640066010000030200000177000000a600fffffffb00000012007200670062005f0069006e007000750074010000047f0000015a0000008b00fffffffb0000001600640065007000740068005f0069006e00700075007401000005df00000160000000a200fffffffb0000001600640065007000740068005f0069006e0070007500740100000000000001aa0000000000000000fb00000012007200670062005f0069006e00700075007401000001b0000001c20000000000000000fb000000100050006f0073006500520042005000460100000378000001de0000000000000000fb0000000e0050006f007300650043004e004e010000055c000001e30000000000000000fb0000000a00560069006500770073030000004e00000080000002e100000197fb000000160050006f007300650043004e004e0020006f006c006401000006b30000008c0000000000000000000000030000073f00000046fc0100000002fb0000000800540069006d006501000000000000073f000003cc00fffffffb0000000800540069006d00650100000000000004500000000000000000000004f60000021600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1855
+  X: 65
+  Y: 24
+  depth_input:
+    collapsed: false
+  posecnn:
+    collapsed: false
+  posecnn detection:
+    collapsed: false
+  posecnn+sdf:
+    collapsed: false
+  rgb_input:
+    collapsed: false
