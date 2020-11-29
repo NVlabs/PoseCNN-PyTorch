@@ -17,7 +17,7 @@ Panels:
         - /DepthCloud2
         - /DepthCloud2/Auto Size1
         - /posecnn+sdf1
-      Splitter Ratio: 0.510638297
+      Splitter Ratio: 0.829787254
     Tree Height: 458
   - Class: rviz/Selection
     Name: Selection
@@ -153,67 +153,183 @@ Visualization Manager:
       Frames:
         All Enabled: false
         camera_color_optical_frame:
-          Value: true
+          Value: false
         measured/camera_aligned_depth_to_color_frame:
-          Value: true
+          Value: false
         measured/camera_aligned_depth_to_infra1_frame:
-          Value: true
+          Value: false
         measured/camera_color_frame:
-          Value: true
+          Value: false
         measured/camera_color_optical_frame:
           Value: true
         measured/camera_depth_frame:
-          Value: true
+          Value: false
         measured/camera_depth_optical_frame:
-          Value: true
+          Value: false
         measured/camera_infra1_frame:
-          Value: true
+          Value: false
         measured/camera_infra1_optical_frame:
-          Value: true
+          Value: false
         measured/camera_infra2_frame:
-          Value: true
+          Value: false
         measured/camera_infra2_optical_frame:
-          Value: true
+          Value: false
         measured/camera_link:
-          Value: true
+          Value: false
+        posecnn/00_bleach_cleanser_01:
+          Value: false
+        posecnn/00_bleach_cleanser_01_refined:
+          Value: false
+        posecnn/00_bleach_cleanser_01_roi:
+          Value: false
         posecnn/00_extra_large_clamp_01:
-          Value: true
+          Value: false
+        posecnn/00_extra_large_clamp_01_refined:
+          Value: false
         posecnn/00_extra_large_clamp_01_roi:
-          Value: true
+          Value: false
+        posecnn/00_extra_large_clamp_02:
+          Value: false
+        posecnn/00_extra_large_clamp_02_refined:
+          Value: false
+        posecnn/00_extra_large_clamp_02_roi:
+          Value: false
+        posecnn/00_master_chef_can_01:
+          Value: false
+        posecnn/00_master_chef_can_01_refined:
+          Value: false
+        posecnn/00_master_chef_can_01_roi:
+          Value: false
+        posecnn/00_pitcher_base_01:
+          Value: false
+        posecnn/00_pitcher_base_01_refined:
+          Value: false
+        posecnn/00_pitcher_base_01_roi:
+          Value: false
         posecnn/00_potted_meat_can_01:
-          Value: true
+          Value: false
         posecnn/00_potted_meat_can_01_roi:
-          Value: true
+          Value: false
         posecnn/00_pudding_box_01:
-          Value: true
+          Value: false
+        posecnn/00_pudding_box_01_refined:
+          Value: false
         posecnn/00_pudding_box_01_roi:
-          Value: true
+          Value: false
+        posecnn/00_pudding_box_02:
+          Value: false
+        posecnn/00_pudding_box_02_refined:
+          Value: false
+        posecnn/00_pudding_box_02_roi:
+          Value: false
         posecnn/00_sugar_box_01:
-          Value: true
+          Value: false
         posecnn/00_sugar_box_01_roi:
-          Value: true
+          Value: false
         posecnn/00_tomato_soup_can_01:
           Value: true
+        posecnn/00_tomato_soup_can_01_refined:
+          Value: true
         posecnn/00_tomato_soup_can_01_roi:
-          Value: true
+          Value: false
         posecnn/00_tomato_soup_can_02:
-          Value: true
+          Value: false
         posecnn/00_tomato_soup_can_02_roi:
-          Value: true
+          Value: false
         posecnn/00_wood_block_01:
-          Value: true
+          Value: false
+        posecnn/00_wood_block_01_refined:
+          Value: false
         posecnn/00_wood_block_01_roi:
-          Value: true
+          Value: false
+        posecnn/00_wood_block_02:
+          Value: false
+        posecnn/00_wood_block_02_refined:
+          Value: false
+        posecnn/00_wood_block_02_roi:
+          Value: false
       Marker Scale: 0.5
       Name: TF
       Show Arrows: false
       Show Axes: true
       Show Names: false
       Tree:
+        camera_color_optical_frame:
+          posecnn/00_bleach_cleanser_01:
+            {}
+          posecnn/00_bleach_cleanser_01_refined:
+            {}
+          posecnn/00_bleach_cleanser_01_roi:
+            {}
+          posecnn/00_extra_large_clamp_01:
+            {}
+          posecnn/00_extra_large_clamp_01_refined:
+            {}
+          posecnn/00_extra_large_clamp_01_roi:
+            {}
+          posecnn/00_master_chef_can_01:
+            {}
+          posecnn/00_master_chef_can_01_roi:
+            {}
+          posecnn/00_pitcher_base_01:
+            {}
+          posecnn/00_pitcher_base_01_refined:
+            {}
+          posecnn/00_pitcher_base_01_roi:
+            {}
+          posecnn/00_potted_meat_can_01:
+            {}
+          posecnn/00_potted_meat_can_01_roi:
+            {}
+          posecnn/00_pudding_box_01:
+            {}
+          posecnn/00_pudding_box_01_refined:
+            {}
+          posecnn/00_pudding_box_01_roi:
+            {}
+          posecnn/00_pudding_box_02:
+            {}
+          posecnn/00_pudding_box_02_refined:
+            {}
+          posecnn/00_pudding_box_02_roi:
+            {}
+          posecnn/00_sugar_box_01:
+            {}
+          posecnn/00_sugar_box_01_roi:
+            {}
+          posecnn/00_tomato_soup_can_01:
+            {}
+          posecnn/00_tomato_soup_can_01_refined:
+            {}
+          posecnn/00_tomato_soup_can_01_roi:
+            {}
+          posecnn/00_tomato_soup_can_02:
+            {}
+          posecnn/00_tomato_soup_can_02_roi:
+            {}
+          posecnn/00_wood_block_01:
+            {}
+          posecnn/00_wood_block_01_refined:
+            {}
+          posecnn/00_wood_block_01_roi:
+            {}
         measured/camera_link:
           measured/camera_aligned_depth_to_color_frame:
             measured/camera_color_optical_frame:
-              {}
+              posecnn/00_extra_large_clamp_02:
+                {}
+              posecnn/00_extra_large_clamp_02_refined:
+                {}
+              posecnn/00_extra_large_clamp_02_roi:
+                {}
+              posecnn/00_master_chef_can_01_refined:
+                {}
+              posecnn/00_wood_block_02:
+                {}
+              posecnn/00_wood_block_02_refined:
+                {}
+              posecnn/00_wood_block_02_roi:
+                {}
           measured/camera_aligned_depth_to_infra1_frame:
             measured/camera_infra1_optical_frame:
               {}
@@ -304,25 +420,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 17.5304871
+      Distance: 1.55080855
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.70302552
-        Y: -0.0904975459
-        Z: -0.101086579
+        X: 0.66575247
+        Y: -0.308768272
+        Z: 0.133030504
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.434797138
+      Pitch: -1.21979666
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.08401203
+      Yaw: 4.58083582
     Saved: ~
 Window Geometry:
   Displays:

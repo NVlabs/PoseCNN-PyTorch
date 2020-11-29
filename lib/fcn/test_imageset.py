@@ -87,6 +87,8 @@ def test_image(network, dataset, im_color, im_depth=None, im_index=None):
             # optimize depths
             if cfg.TEST.POSE_REFINE and im_depth is not None:
                 poses_refined = refine_pose(labels, depth_tensor, rois, poses, meta_data, dataset)
+            else:
+                poses_refined = None
 
         else:
             # no pose regression

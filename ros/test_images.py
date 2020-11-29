@@ -167,7 +167,7 @@ class ImageListener:
 
         # poses
         if cfg.TEST.ROS_CAMERA == 'D435':
-            frame = 'camera_color_optical_frame'
+            frame = 'measured/camera_color_optical_frame'
         elif cfg.TEST.ROS_CAMERA == 'Azure':
             frame = 'rgb_camera_link'
         else:
@@ -180,6 +180,8 @@ class ImageListener:
         index = np.argsort(rois[:, 2])
         rois = rois[index, :]
         poses = poses[index, :]
+        if poses_refined is not None:
+            poses_refined = poses_refined[index, :]
         for i in range(rois.shape[0]):
             cls = int(rois[i, 1])
             if cls > 0 and rois[i, -1] > cfg.TEST.DET_THRESHOLD:
@@ -204,8 +206,14 @@ class ImageListener:
                 now = rospy.Time.now()
                 self.br.sendTransform([n, now.secs, 0], [x1, y1, x2, y2], now, tf_name + '_roi', frame)
 
+                # send poses
                 quat = [poses[i, 1], poses[i, 2], poses[i, 3], poses[i, 0]]
                 self.br.sendTransform(poses[i, 4:7], quat, rospy.Time.now(), tf_name, frame)
+
+                # send poses refined
+                if poses_refined is not None:
+                    quat = [poses_refined[i, 1], poses_refined[i, 2], poses_refined[i, 3], poses_refined[i, 0]]
+                    self.br.sendTransform(poses_refined[i, 4:7], quat, rospy.Time.now(), tf_name + '_refined', frame)
 
                 # create pose msg
                 msg = PoseStamped()
