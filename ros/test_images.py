@@ -90,15 +90,18 @@ class ImageListener:
             rgb_sub = message_filters.Subscriber('/camera/color/image_raw', Image, queue_size=10)
             depth_sub = message_filters.Subscriber('/camera/aligned_depth_to_color/image_raw', Image, queue_size=10)
             msg = rospy.wait_for_message('/camera/color/camera_info', CameraInfo)
+            self.base_frame = 'measured/camera_color_optical_frame'
         elif cfg.TEST.ROS_CAMERA == 'Azure':             
             rgb_sub = message_filters.Subscriber('/rgb/image_raw', Image, queue_size=10)
             depth_sub = message_filters.Subscriber('/depth_to_rgb/image_raw', Image, queue_size=10)
             msg = rospy.wait_for_message('/rgb/camera_info', CameraInfo)
+            self.base_frame = 'rgb_camera_link'
         else:
             # use kinect
             rgb_sub = message_filters.Subscriber('/%s/rgb/image_color' % (cfg.TEST.ROS_CAMERA), Image, queue_size=2)
             depth_sub = message_filters.Subscriber('/%s/depth_registered/image' % (cfg.TEST.ROS_CAMERA), Image, queue_size=2)
             msg = rospy.wait_for_message('/%s/rgb/camera_info' % (cfg.TEST.ROS_CAMERA), CameraInfo)
+            self.base_frame = '%s_depth_optical_frame' % (cfg.TEST.ROS_CAMERA)
 
         # update camera intrinsics
         K = np.array(msg.K).reshape(3, 3)
@@ -165,14 +168,6 @@ class ImageListener:
         pose_msg.encoding = 'rgb8'
         self.pose_refined_pub.publish(pose_msg)
 
-        # poses
-        if cfg.TEST.ROS_CAMERA == 'D435':
-            frame = 'measured/camera_color_optical_frame'
-        elif cfg.TEST.ROS_CAMERA == 'Azure':
-            frame = 'rgb_camera_link'
-        else:
-            frame = '%s_depth_optical_frame' % (cfg.TEST.ROS_CAMERA)
-
         indexes = np.zeros((self.dataset.num_classes, ), dtype=np.int32)
         if not rois.shape[0]:
             return
@@ -204,21 +199,21 @@ class ImageListener:
                 x2 = rois[i, 4] / n
                 y2 = rois[i, 5] / n
                 now = rospy.Time.now()
-                self.br.sendTransform([n, now.secs, 0], [x1, y1, x2, y2], now, tf_name + '_roi', frame)
+                self.br.sendTransform([n, now.secs, 0], [x1, y1, x2, y2], now, tf_name + '_roi', self.base_frame)
 
                 # send poses
                 quat = [poses[i, 1], poses[i, 2], poses[i, 3], poses[i, 0]]
-                self.br.sendTransform(poses[i, 4:7], quat, rospy.Time.now(), tf_name, frame)
+                self.br.sendTransform(poses[i, 4:7], quat, rospy.Time.now(), tf_name, self.base_frame)
 
                 # send poses refined
                 if poses_refined is not None:
                     quat = [poses_refined[i, 1], poses_refined[i, 2], poses_refined[i, 3], poses_refined[i, 0]]
-                    self.br.sendTransform(poses_refined[i, 4:7], quat, rospy.Time.now(), tf_name + '_refined', frame)
+                    self.br.sendTransform(poses_refined[i, 4:7], quat, rospy.Time.now(), tf_name + '_refined', self.base_frame)
 
                 # create pose msg
                 msg = PoseStamped()
                 msg.header.stamp = rospy.Time.now()
-                msg.header.frame_id = frame
+                msg.header.frame_id = self.base_frame
                 msg.pose.orientation.x = poses[i, 1]
                 msg.pose.orientation.y = poses[i, 2]
                 msg.pose.orientation.z = poses[i, 3]
