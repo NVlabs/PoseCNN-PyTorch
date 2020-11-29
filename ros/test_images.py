@@ -102,8 +102,8 @@ class ImageListener:
 
         # update camera intrinsics
         K = np.array(msg.K).reshape(3, 3)
-        dataset._intrinsic_matrix = K
-        print(dataset._intrinsic_matrix)
+        self.dataset._intrinsic_matrix = K
+        print(self.dataset._intrinsic_matrix)
 
         queue_size = 1
         slop_seconds = 0.1

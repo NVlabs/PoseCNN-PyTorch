@@ -63,12 +63,14 @@ def test_image(network, dataset, im_color, im_depth=None, im_index=None):
             out_quaternion = out_quaternion.detach().cpu().numpy()
             num = rois.shape[0]
             poses = out_pose.copy()
-            for j in xrange(num):
+            for j in range(num):
                 cls = int(rois[j, 1])
                 if cls >= 0:
                     qt = out_quaternion[j, 4*cls:4*cls+4]
                     qt = qt / np.linalg.norm(qt)
                     # allocentric to egocentric
+                    poses[j, 4] *= poses[j, 6]
+                    poses[j, 5] *= poses[j, 6]
                     T = poses[j, 4:]
                     poses[j, :4] = allocentric2egocentric(qt, T)
 
