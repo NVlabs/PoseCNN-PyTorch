@@ -10,7 +10,7 @@ We introduce PoseCNN, a new Convolutional Neural Network for 6D object pose esti
 
 ### License
 
-PoseCNN is released under the MIT License (refer to the LICENSE file for details).
+PoseCNN is released under the NVIDIA Source Code License (refer to the LICENSE file for details).
 
 ### Citation
 
@@ -22,6 +22,11 @@ If you find the package is useful in your research, please consider citing:
         booktitle   = {Robotics: Science and Systems (RSS)},
         Year = {2018}
     }
+
+### Required environment
+- Ubuntu 16.04 or above
+- PyTorch 0.4.1 or above
+- CUDA 9.1 or above
 
 ### Installation
 
@@ -39,16 +44,16 @@ Use python3 by default. If ROS is needed, compile with python2.
     sudo python setup.py install
     ```
 
-5. Compile the ycb_render in $ROOT/ycb_render
+5. Compile cython components
     ```Shell
-    cd ycb_render
-    python setup.py develop
+    cd $ROOT/lib/utils
+    python setup.py build_ext --inplace
     ```
 
-6. Compile cython components
+6. Compile the ycb_render in $ROOT/ycb_render
     ```Shell
-    cd $ROOT/lib
-    python setup.py build_ext --inplace
+    cd $ROOT/ycb_render
+    python setup.py develop
     ```
 
 ### Download
@@ -56,13 +61,10 @@ Use python3 by default. If ROS is needed, compile with python2.
 
 ### Data needed for training
 - Pretrained VGG16 weights: [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints.
-- Background dataset: Our own images [here](https://drive.google.com/open?id=1YDnGV4poelk9iezxLxYK_zexXugc4Ih1)
+- Background dataset: Our own images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G)
 - Background dataset: COCO 2014 [here](https://cocodataset.org/#download)
 
-### Required environment
-- Ubuntu 16.04 or above
-- PyTorch 0.4.1 or above
-- CUDA 9.1 or above
+
 
 ### Running the demo
 1. Download our trained model on five YCB Objects from [here](https://drive.google.com/open?id=1fxfBBCOPqSMYARiJQBc8ZjcWq5LiLHDq), and save it to $ROOT/data/checkpoints.
@@ -81,7 +83,6 @@ Use python3 by default. If ROS is needed, compile with python2.
     ```Shell
     cd $ROOT/data/YCB_Video
     ln -s $ycb_data data
-    ln -s $ycb_models models
     ```
 
 3. Training and testing on the YCB-Video dataset
@@ -96,7 +97,7 @@ Use python3 by default. If ROS is needed, compile with python2.
 
     ```
 
-### Running with ROS
+### Running with ROS on a Realsense Camera
 ```Shell
 # start realsense
 roslaunch realsense2_camera rs_aligned_depth.launch tf_prefix:=measured/camera
