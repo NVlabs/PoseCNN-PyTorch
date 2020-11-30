@@ -305,16 +305,15 @@ if __name__ == '__main__':
     network = torch.nn.DataParallel(network, device_ids=[0]).cuda(device=cfg.device)
     cudnn.benchmark = True
 
-    #'''
-    print('loading 3D models')
-    cfg.renderer = YCBRenderer(width=cfg.TRAIN.SYN_WIDTH, height=cfg.TRAIN.SYN_HEIGHT, gpu_id=args.gpu_id, render_marker=False)
-    model_mesh_paths = [dataset.model_mesh_paths[i-1] for i in cfg.TEST.CLASSES[1:]]
-    model_texture_paths = [dataset.model_texture_paths[i-1] for i in cfg.TEST.CLASSES[1:]]
-    model_colors = [dataset.model_colors[i-1] for i in cfg.TEST.CLASSES[1:]]
-    cfg.renderer.load_objects(model_mesh_paths, model_texture_paths, model_colors)
-    cfg.renderer.set_camera_default()
-    print(dataset.model_mesh_paths)
-    #'''
+    if cfg.TRAIN.POSE_REG:
+        print('loading 3D models')
+        cfg.renderer = YCBRenderer(width=cfg.TRAIN.SYN_WIDTH, height=cfg.TRAIN.SYN_HEIGHT, gpu_id=args.gpu_id, render_marker=False)
+        model_mesh_paths = [dataset.model_mesh_paths[i-1] for i in cfg.TEST.CLASSES[1:]]
+        model_texture_paths = [dataset.model_texture_paths[i-1] for i in cfg.TEST.CLASSES[1:]]
+        model_colors = [dataset.model_colors[i-1] for i in cfg.TEST.CLASSES[1:]]
+        cfg.renderer.load_objects(model_mesh_paths, model_texture_paths, model_colors)
+        cfg.renderer.set_camera_default()
+        print(dataset.model_mesh_paths)
 
     # load sdfs
     if cfg.TEST.POSE_REFINE:

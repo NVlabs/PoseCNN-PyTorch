@@ -25,40 +25,42 @@ If you find the package is useful in your research, please consider citing:
 
 ### Installation
 
+Use python3 by default. If ROS is needed, compile with python2.
+
 1. Install [PyTorch](https://pytorch.org/).
 
-2. Initialize all submodules
-   ```Shell
-   git lfs clone
-   git submodule update --init --recursive
-   ```
+2. Install Eigen from the Github source code [here](https://github.com/eigenteam/eigen-git-mirror)
 
-3. Install Eigen from the Github source code [here](https://github.com/eigenteam/eigen-git-mirror)
+3. Install Sophus from the Github source code [here](https://github.com/yuxng/Sophus)
 
-4. Install Sophus from the Github source code [here](https://github.com/strasdat/Sophus)
-   Check out this commit "ceb6380a1584b300e687feeeea8799353d48859f"
-
-5. Compile the new layers under $ROOT/lib/layers we introduce in PoseCNN.
+4. Compile the new layers under $ROOT/lib/layers we introduce in PoseCNN.
     ```Shell
     cd $ROOT/lib/layers
-    python setup.py install
+    sudo python setup.py install
     ```
 
-6. Download the VGG16 weights from [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints.
+5. Compile the ycb_render in $ROOT/ycb_render
+    ```Shell
+    cd ycb_render
+    python setup.py develop
+    ```
 
-7. Compile the ycb_render in $ROOT/ycb_render
-
-8. Compile cython components
+6. Compile cython components
     ```Shell
     cd $ROOT/lib
     python setup.py build_ext --inplace
     ```
 
-### Background datasets
-- AllenCenter [here](https://drive.google.com/open?id=1YDnGV4poelk9iezxLxYK_zexXugc4Ih1)
+### Download
+- 3D models [here]
+
+### Data needed for training
+- Pretrained VGG16 weights: [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints.
+- Background dataset: Our own images [here](https://drive.google.com/open?id=1YDnGV4poelk9iezxLxYK_zexXugc4Ih1)
+- Background dataset: COCO 2014 [here](https://cocodataset.org/#download)
 
 ### Required environment
-- Ubuntu 16.04
+- Ubuntu 16.04 or above
 - PyTorch 0.4.1 or above
 - CUDA 9.1 or above
 
@@ -102,6 +104,9 @@ If you find the package is useful in your research, please consider citing:
     # start rviz
     rosrun rviz rviz -d ./ros/posecnn.rviz
 
-    # run posecnn
+    # run posecnn for detection only (20 objects)
+    ./experiments/scripts/ros_ycb_object_test_detection.sh $GPU_ID
+
+    # run full posecnn (20 objects)
     ./experiments/scripts/ros_ycb_object_test.sh $GPU_ID
     ```

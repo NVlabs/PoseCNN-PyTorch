@@ -21,7 +21,7 @@ TRAIN:
   FG_THRESH_POSE: 0.5
   CLASSES: !!python/tuple [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21] # no large clamp
   SYMMETRY: !!python/tuple [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]
-  SNAPSHOT_INFIX: ycb_object
+  SNAPSHOT_INFIX: ycb_object_detection
   SNAPSHOT_EPOCHS: 1
   SNAPSHOT_PREFIX: vgg16
   USE_FLIPPED: False
@@ -29,8 +29,8 @@ TRAIN:
   ADD_NOISE: True
   VISUALIZE: False
   VERTEX_REG: True
-  POSE_REG: True
-  SLIM: False
+  POSE_REG: False       # no rotation regression
+  SLIM: True
   # synthetic data
   SYNTHESIZE: True
   SYNNUM: 40000
@@ -50,16 +50,13 @@ TEST:
   SINGLE_FRAME: True
   HOUGH_LABEL_THRESHOLD: 400
   HOUGH_VOTING_THRESHOLD: 10
-  NUM_SDF_ITERATIONS_TRACKING: 50
-  SDF_TRANSLATION_REG: 1000.0
-  SDF_ROTATION_REG: 10.0
   IMS_PER_BATCH: 1
   HOUGH_SKIP_PIXELS: 10
   DET_THRESHOLD: 0.2
   SCALES_BASE: !!python/tuple [1.0]
   VISUALIZE: False
   SYNTHESIZE: True
-  POSE_REFINE: True
+  POSE_REFINE: False
   ROS_CAMERA: D435
   CLASSES: !!python/tuple [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21] # no large clamp
   SYMMETRY: !!python/tuple [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1]

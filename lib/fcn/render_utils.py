@@ -61,7 +61,7 @@ def render_image(dataset, im, rois, poses, poses_refine, labels):
             cv2.rectangle(im_label, (x1, y1), (x2, y2), class_colors[cls], 2)
 
     # rendering
-    if len(cls_indexes) > 0:
+    if len(cls_indexes) > 0 and cfg.TRAIN.POSE_REG:
 
         height = im.shape[0]
         width = im.shape[1]
