@@ -97,16 +97,16 @@ Use python3 by default. If ROS is needed, compile with python2.
     ```
 
 ### Running with ROS
-    ```Shell
-    # start realsense
-    roslaunch realsense2_camera rs_aligned_depth.launch tf_prefix:=measured/camera
+```Shell
+# start realsense
+roslaunch realsense2_camera rs_aligned_depth.launch tf_prefix:=measured/camera
 
-    # start rviz
-    rosrun rviz rviz -d ./ros/posecnn.rviz
+# start rviz
+rosrun rviz rviz -d ./ros/posecnn.rviz
 
-    # run posecnn for detection only (20 objects)
-    ./experiments/scripts/ros_ycb_object_test_detection.sh $GPU_ID
+# run posecnn for detection only (20 objects)
+./experiments/scripts/ros_ycb_object_test_detection.sh $GPU_ID
 
-    # run full posecnn (20 objects)
-    ./experiments/scripts/ros_ycb_object_test.sh $GPU_ID
-    ```
+# run full posecnn (20 objects)
+./experiments/scripts/ros_ycb_object_test.sh $GPU_ID
+```
