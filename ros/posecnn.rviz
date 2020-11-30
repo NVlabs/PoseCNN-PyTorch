@@ -19,7 +19,7 @@ Panels:
         - /posecnn+sdf1
         - /deepim1
       Splitter Ratio: 0.829787254
-    Tree Height: 458
+    Tree Height: 571
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -153,22 +153,14 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        D435_depth_optical_frame:
-          Value: false
-        deepim/00_bleach_cleanser_01:
-          Value: false
-        deepim/00_cracker_box_01:
-          Value: false
         deepim/00_extra_large_clamp_01:
           Value: false
-        deepim/00_pudding_box_01:
+        deepim/00_extra_large_clamp_02:
           Value: false
-        deepim/00_sugar_box_01:
+        deepim/00_pitcher_base_01:
           Value: false
         deepim/00_tomato_soup_can_01:
           Value: true
-        deepim/00_wood_block_01:
-          Value: false
         measured/camera_aligned_depth_to_color_frame:
           Value: false
         measured/camera_aligned_depth_to_infra1_frame:
@@ -191,18 +183,6 @@ Visualization Manager:
           Value: false
         measured/camera_link:
           Value: false
-        posecnn/00_bleach_cleanser_01:
-          Value: false
-        posecnn/00_bleach_cleanser_01_refined:
-          Value: false
-        posecnn/00_bleach_cleanser_01_roi:
-          Value: false
-        posecnn/00_cracker_box_01:
-          Value: false
-        posecnn/00_cracker_box_01_refined:
-          Value: false
-        posecnn/00_cracker_box_01_roi:
-          Value: false
         posecnn/00_extra_large_clamp_01:
           Value: false
         posecnn/00_extra_large_clamp_01_refined:
@@ -215,44 +195,20 @@ Visualization Manager:
           Value: false
         posecnn/00_extra_large_clamp_02_roi:
           Value: false
-        posecnn/00_large_marker_01:
+        posecnn/00_extra_large_clamp_03:
           Value: false
-        posecnn/00_large_marker_01_refined:
+        posecnn/00_extra_large_clamp_03_refined:
           Value: false
-        posecnn/00_large_marker_01_roi:
+        posecnn/00_extra_large_clamp_03_roi:
           Value: false
-        posecnn/00_potted_meat_can_01:
+        posecnn/00_pitcher_base_01:
           Value: false
-        posecnn/00_potted_meat_can_01_refined:
+        posecnn/00_pitcher_base_01_refined:
           Value: false
-        posecnn/00_potted_meat_can_01_roi:
-          Value: false
-        posecnn/00_pudding_box_01:
-          Value: false
-        posecnn/00_pudding_box_01_refined:
-          Value: false
-        posecnn/00_pudding_box_01_roi:
-          Value: false
-        posecnn/00_pudding_box_02:
-          Value: false
-        posecnn/00_pudding_box_02_refined:
-          Value: false
-        posecnn/00_pudding_box_02_roi:
-          Value: false
-        posecnn/00_scissors_01:
-          Value: false
-        posecnn/00_scissors_01_refined:
-          Value: false
-        posecnn/00_scissors_01_roi:
-          Value: false
-        posecnn/00_sugar_box_01:
-          Value: false
-        posecnn/00_sugar_box_01_refined:
-          Value: false
-        posecnn/00_sugar_box_01_roi:
+        posecnn/00_pitcher_base_01_roi:
           Value: false
         posecnn/00_tomato_soup_can_01:
-          Value: true
+          Value: false
         posecnn/00_tomato_soup_can_01_refined:
           Value: false
         posecnn/00_tomato_soup_can_01_roi:
@@ -267,34 +223,18 @@ Visualization Manager:
       Name: TF
       Show Arrows: false
       Show Axes: true
-      Show Names: false
+      Show Names: true
       Tree:
         measured/camera_link:
           measured/camera_aligned_depth_to_color_frame:
             measured/camera_color_optical_frame:
-              deepim/00_bleach_cleanser_01:
-                {}
-              deepim/00_cracker_box_01:
-                {}
               deepim/00_extra_large_clamp_01:
                 {}
-              deepim/00_pudding_box_01:
+              deepim/00_extra_large_clamp_02:
+                {}
+              deepim/00_pitcher_base_01:
                 {}
               deepim/00_tomato_soup_can_01:
-                {}
-              deepim/00_wood_block_01:
-                {}
-              posecnn/00_bleach_cleanser_01:
-                {}
-              posecnn/00_bleach_cleanser_01_refined:
-                {}
-              posecnn/00_bleach_cleanser_01_roi:
-                {}
-              posecnn/00_cracker_box_01:
-                {}
-              posecnn/00_cracker_box_01_refined:
-                {}
-              posecnn/00_cracker_box_01_roi:
                 {}
               posecnn/00_extra_large_clamp_01:
                 {}
@@ -308,41 +248,17 @@ Visualization Manager:
                 {}
               posecnn/00_extra_large_clamp_02_roi:
                 {}
-              posecnn/00_large_marker_01:
+              posecnn/00_extra_large_clamp_03:
                 {}
-              posecnn/00_large_marker_01_refined:
+              posecnn/00_extra_large_clamp_03_refined:
                 {}
-              posecnn/00_large_marker_01_roi:
+              posecnn/00_extra_large_clamp_03_roi:
                 {}
-              posecnn/00_potted_meat_can_01:
+              posecnn/00_pitcher_base_01:
                 {}
-              posecnn/00_potted_meat_can_01_refined:
+              posecnn/00_pitcher_base_01_refined:
                 {}
-              posecnn/00_potted_meat_can_01_roi:
-                {}
-              posecnn/00_pudding_box_01:
-                {}
-              posecnn/00_pudding_box_01_refined:
-                {}
-              posecnn/00_pudding_box_01_roi:
-                {}
-              posecnn/00_pudding_box_02:
-                {}
-              posecnn/00_pudding_box_02_refined:
-                {}
-              posecnn/00_pudding_box_02_roi:
-                {}
-              posecnn/00_scissors_01:
-                {}
-              posecnn/00_scissors_01_refined:
-                {}
-              posecnn/00_scissors_01_roi:
-                {}
-              posecnn/00_sugar_box_01:
-                {}
-              posecnn/00_sugar_box_01_refined:
-                {}
-              posecnn/00_sugar_box_01_roi:
+              posecnn/00_pitcher_base_01_roi:
                 {}
               posecnn/00_tomato_soup_can_01:
                 {}
@@ -458,25 +374,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.49907589
+      Distance: 0.481717646
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.634980798
-        Y: -0.33039394
-        Z: 0.157638595
+        X: -0.0441879928
+        Y: -0.488957047
+        Z: 0.310679466
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: -0.789796472
+      Pitch: -1.13479626
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.33083582
+      Yaw: 4.49583817
     Saved: ~
 Window Geometry:
   Displays:
@@ -484,7 +400,7 @@ Window Geometry:
   Height: 1176
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000024300000216fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006600fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000021200000216000000e200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000037f000000b7000000000000000000000001000001ee000001f9fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc0000023d000001f90000000000fffffffa000000000100000002fb0000000a0049006d0061006700650100000000ffffffff0000000000000000fb0000000a005600690065007700730000000551000001ee0000011e00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000073f000001e4fc010000000efb000000220070006f007300650063006e006e00200064006500740065006300740069006f006e01000000000000013d000000db00fffffffb0000000e0070006f007300650063006e006e01000001430000013b0000007e00fffffffb0000000a0049006d00610067006501000003e7000001a70000000000000000fb000000160070006f007300650063006e006e002b007300640066010000028400000138000000a600fffffffb000000160070006f007300650063006e006e002b0073006400660100000302000001770000000000000000fb0000000c00640065006500700069006d01000003c2000001340000007700fffffffb00000012007200670062005f0069006e00700075007401000004fc0000011e0000008b00fffffffb0000001600640065007000740068005f0069006e00700075007401000006200000011f000000a200fffffffb0000001600640065007000740068005f0069006e0070007500740100000000000001aa0000000000000000fb00000012007200670062005f0069006e00700075007401000001b0000001c20000000000000000fb000000100050006f0073006500520042005000460100000378000001de0000000000000000fb0000000e0050006f007300650043004e004e010000055c000001e30000000000000000fb0000000a00560069006500770073030000004e00000080000002e100000197fb000000160050006f007300650043004e004e0020006f006c006401000006b30000008c0000000000000000000000030000073f00000046fc0100000002fb0000000800540069006d006501000000000000073f000003cc00fffffffb0000000800540069006d00650100000000000004500000000000000000000004f60000021600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000024300000287fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006600fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007301000001a100000287000000e200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000037f000000b7000000000000000000000001000001ee00000287fc0200000005fb00000012007200670062005f0069006e00700075007401000001a10000013d0000001b00fffffffb0000001600640065007000740068005f0069006e00700075007401000002e4000001440000001b00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc0000023d000001f90000000000fffffffa000000000100000002fb0000000a0049006d0061006700650100000000ffffffff0000000000000000fb0000000a005600690065007700730000000551000001ee0000011e00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000073f00000173fc010000000cfb000000220070006f007300650063006e006e00200064006500740065006300740069006f006e0100000000000001d1000000db00fffffffb0000000e0070006f007300650063006e006e01000001d7000001ce0000007e00fffffffb0000000a0049006d00610067006501000003e7000001a70000000000000000fb000000160070006f007300650063006e006e002b00730064006601000003ab000001ca000000a600fffffffb000000160070006f007300650063006e006e002b0073006400660100000302000001770000000000000000fb0000000c00640065006500700069006d010000057b000001c40000007700fffffffb0000001600640065007000740068005f0069006e0070007500740100000000000001aa0000000000000000fb00000012007200670062005f0069006e00700075007401000001b0000001c20000000000000000fb000000100050006f0073006500520042005000460100000378000001de0000000000000000fb0000000e0050006f007300650043004e004e010000055c000001e30000000000000000fb0000000a00560069006500770073030000004e00000080000002e100000197fb000000160050006f007300650043004e004e0020006f006c006401000006b30000008c0000000000000000000000030000073f00000046fc0100000002fb0000000800540069006d006501000000000000073f000003cc00fffffffb0000000800540069006d00650100000000000004500000000000000000000003020000028700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:

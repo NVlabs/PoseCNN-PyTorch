@@ -202,7 +202,7 @@ def vis_test(dataset, im, im_depth, label, rois, poses, poses_refined, im_pose, 
             plot += 1
             ax.set_title('predicted poses')
             plt.imshow(im)
-            for j in xrange(rois.shape[0]):
+            for j in range(rois.shape[0]):
                 cls = int(rois[j, 1])
                 print(classes[cls], rois[j, -1])
                 if cls > 0 and rois[j, -1] > cfg.TEST.DET_THRESHOLD:
