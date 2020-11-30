@@ -290,6 +290,8 @@ if __name__ == '__main__':
 
     # dataset
     cfg.MODE = 'TEST'
+    cfg.TEST.SYNTHESIZE = False
+    cfg.TEST.VISUALIZE = False
     dataset = get_dataset(args.dataset_name)
 
     # prepare network
