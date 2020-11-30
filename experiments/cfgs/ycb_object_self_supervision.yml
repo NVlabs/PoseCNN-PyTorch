@@ -31,7 +31,6 @@ TRAIN:
   VERTEX_REG: True
   POSE_REG: True
   SLIM: False
-  AFFINE: True
   MAX_ITERS_PER_EPOCH: 20000
   # synthetic data
   SYNTHESIZE: True

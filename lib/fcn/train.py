@@ -118,42 +118,6 @@ def train(train_loader, background_loader, network, optimizer, epoch):
             vertex_targets = []
             vertex_weights = []
 
-        # affine transformation
-        if cfg.TRAIN.AFFINE:
-            affine_matrix = sample['affine_matrix']
-            affine_matrix_coordinate = sample['affine_matrix_coordinate']
-            grids = nn.functional.affine_grid(affine_matrix, inputs.size())
-            inputs = nn.functional.grid_sample(inputs, grids, padding_mode='border')
-            mask = nn.functional.grid_sample(mask, grids, mode='nearest')
-
-            grids_label = nn.functional.affine_grid(affine_matrix, labels.size())
-            labels = nn.functional.grid_sample(labels, grids_label, mode='nearest')
-            labels_sum = torch.sum(labels, dim=1)
-            labels[:, 0, :, :] = 1 - labels_sum + labels[:, 0, :, :]
-
-            box_tensor = torch.cuda.FloatTensor(3, gt_boxes.shape[1]).detach()
-            for j in range(gt_boxes.shape[0]):
-                index = gt_boxes[j, :, 4] > 0
-                box_tensor[0, :] = gt_boxes[j, :, 0]
-                box_tensor[1, :] = gt_boxes[j, :, 1]
-                box_tensor[2, :] = 1.0
-                box_new = torch.mm(affine_matrix_coordinate[j], box_tensor)
-                gt_boxes[j, index, 0] = box_new[0, index]
-                gt_boxes[j, index, 1] = box_new[1, index]
-
-                box_tensor[0, :] = gt_boxes[j, :, 2]
-                box_tensor[1, :] = gt_boxes[j, :, 3]
-                box_tensor[2, :] = 1.0
-                box_new = torch.mm(affine_matrix_coordinate[j], box_tensor)
-                gt_boxes[j, index, 2] = box_new[0, index]
-                gt_boxes[j, index, 3] = box_new[1, index]
-            sample['gt_boxes'] = gt_boxes.cpu()
-
-            if cfg.TRAIN.VERTEX_REG:
-                grids_vertex = nn.functional.affine_grid(affine_matrix, vertex_targets.size())
-                vertex_targets = nn.functional.grid_sample(vertex_targets, grids_vertex, mode='nearest')
-                vertex_weights = nn.functional.grid_sample(vertex_weights, grids_vertex, mode='nearest')
-
         # add background
         try:
             _, background = next(enum_background)
