@@ -91,8 +91,8 @@ class YCBSelfSupervision(data.Dataset, datasets.imdb):
         self._symmetry_test = np.array(cfg.TEST.SYMMETRY).astype(np.float32)
         self._extents = self._extents_all[cfg.TRAIN.CLASSES]
         self._extents_test = self._extents_all[cfg.TEST.CLASSES]
-        self._points, self._points_all, self._point_blob, self._points_clamp = self._load_object_points(self._classes, self._extents, self._symmetry)
-        self._points_test, self._points_all_test, self._point_blob_test, self._points_clamp_test = \
+        self._points, self._points_all, self._point_blob = self._load_object_points(self._classes, self._extents, self._symmetry)
+        self._points_test, self._points_all_test, self._point_blob_test = \
             self._load_object_points(self._classes_test, self._extents_test, self._symmetry_test)
         self._pixel_mean = torch.tensor(cfg.PIXEL_MEANS / 255.0).cuda().float()
 
@@ -886,12 +886,7 @@ class YCBSelfSupervision(data.Dataset, datasets.imdb):
             else:
                 point_blob[i, :, :] = weight * point_blob[i, :, :]
 
-        # points of large clamp
-        point_file = os.path.join(self._model_path, '051_large_clamp', 'points.xyz')
-        points_clamp = np.loadtxt(point_file)
-        points_clamp = points_clamp[:num, :]
-
-        return points, points_all, point_blob, points_clamp
+        return points, points_all, point_blob
 
 
     def _load_object_extents(self):

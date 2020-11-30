@@ -1,0 +1,146 @@
+num of scenes: 497
+num of images: 6541
+=============training 0.20=================
+num of scenes: 79
+num of images: 1203
+002_master_chef_can: 152
+003_cracker_box: 354
+004_sugar_box: 196
+005_tomato_soup_can: 222
+006_mustard_bottle: 233
+007_tuna_fish_can: 169
+008_pudding_box: 384
+009_gelatin_box: 295
+010_potted_meat_can: 179
+011_banana: 195
+019_pitcher_base: 168
+021_bleach_cleanser: 220
+024_bowl: 178
+025_mug: 181
+035_power_drill: 151
+036_wood_block: 145
+037_scissors: 188
+040_large_marker: 176
+052_extra_large_clamp: 201
+061_foam_brick: 328
+==============================
+=============training 0.40=================
+num of scenes: 122
+num of images: 1770
+002_master_chef_can: 236
+003_cracker_box: 458
+004_sugar_box: 292
+005_tomato_soup_can: 331
+006_mustard_bottle: 380
+007_tuna_fish_can: 284
+008_pudding_box: 450
+009_gelatin_box: 360
+010_potted_meat_can: 296
+011_banana: 292
+019_pitcher_base: 264
+021_bleach_cleanser: 303
+024_bowl: 311
+025_mug: 262
+035_power_drill: 281
+036_wood_block: 253
+037_scissors: 303
+040_large_marker: 259
+052_extra_large_clamp: 292
+061_foam_brick: 387
+==============================
+=============training 0.60=================
+num of scenes: 169
+num of images: 2403
+002_master_chef_can: 340
+003_cracker_box: 523
+004_sugar_box: 418
+005_tomato_soup_can: 460
+006_mustard_bottle: 551
+007_tuna_fish_can: 405
+008_pudding_box: 548
+009_gelatin_box: 431
+010_potted_meat_can: 422
+011_banana: 420
+019_pitcher_base: 387
+021_bleach_cleanser: 375
+024_bowl: 410
+025_mug: 368
+035_power_drill: 372
+036_wood_block: 363
+037_scissors: 430
+040_large_marker: 373
+052_extra_large_clamp: 433
+061_foam_brick: 471
+==============================
+=============training 0.80=================
+num of scenes: 212
+num of images: 2898
+002_master_chef_can: 441
+003_cracker_box: 592
+004_sugar_box: 493
+005_tomato_soup_can: 553
+006_mustard_bottle: 668
+007_tuna_fish_can: 472
+008_pudding_box: 620
+009_gelatin_box: 474
+010_potted_meat_can: 510
+011_banana: 517
+019_pitcher_base: 485
+021_bleach_cleanser: 459
+024_bowl: 521
+025_mug: 457
+035_power_drill: 482
+036_wood_block: 450
+037_scissors: 546
+040_large_marker: 446
+052_extra_large_clamp: 519
+061_foam_brick: 528
+==============================
+=============training 1.00=================
+num of scenes: 265
+num of images: 3590
+002_master_chef_can: 550
+003_cracker_box: 710
+004_sugar_box: 539
+005_tomato_soup_can: 709
+006_mustard_bottle: 761
+007_tuna_fish_can: 598
+008_pudding_box: 752
+009_gelatin_box: 595
+010_potted_meat_can: 610
+011_banana: 570
+019_pitcher_base: 541
+021_bleach_cleanser: 591
+024_bowl: 614
+025_mug: 644
+035_power_drill: 581
+036_wood_block: 584
+037_scissors: 721
+040_large_marker: 580
+052_extra_large_clamp: 624
+061_foam_brick: 688
+==============================
+=============testing=================
+num of scenes: 232
+num of images: 2951
+002_master_chef_can: 438
+003_cracker_box: 496
+004_sugar_box: 517
+005_tomato_soup_can: 615
+006_mustard_bottle: 798
+007_tuna_fish_can: 505
+008_pudding_box: 509
+009_gelatin_box: 403
+010_potted_meat_can: 548
+011_banana: 503
+019_pitcher_base: 475
+021_bleach_cleanser: 459
+024_bowl: 532
+025_mug: 534
+035_power_drill: 492
+036_wood_block: 462
+037_scissors: 634
+040_large_marker: 453
+052_extra_large_clamp: 445
+061_foam_brick: 471
+==============================
