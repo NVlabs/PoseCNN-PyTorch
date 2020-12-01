@@ -1,4 +1,4 @@
-# posecnn-pytorch
+# PoseCNN-PyTorch
 
 PyTorch implementation of the PoseCNN framework.
 
@@ -8,9 +8,11 @@ We implement PoseCNN in PyTorch in this project.
 
 PoseCNN is an end-to-end Convolutional Neural Network for 6D object pose estimation. PoseCNN estimates the 3D translation of an object by localizing its center in the image and predicting its distance from the camera. The 3D rotation of the object is estimated by regressing to a quaternion representation. [arXiv](https://arxiv.org/abs/1711.00199), [Project](https://rse-lab.cs.washington.edu/projects/posecnn/)
 
+The code also supports pose refinement by matching segmented 3D point cloud of an object to its SDF.
+
 ### License
 
-PoseCNN is released under the NVIDIA Source Code License (refer to the LICENSE file for details).
+PoseCNN-PyTorch is released under the NVIDIA Source Code License (refer to the LICENSE file for details).
 
 ### Citation
 
@@ -75,13 +77,11 @@ Use python3. If ROS is needed, compile with python2.
 
 ### Training your own models with synthetic data
 
-1. Download our background images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G). Or use your own background images.
+1. Download background images: our own images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G), COCO 2014 images [here](https://cocodataset.org/#download), or use your own background images.
 
-2. Download COCO 2014 images as background images [here](https://cocodataset.org/#download).
+2. Download pretrained VGG16 weights: [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints.
 
-3. Download pretrained VGG16 weights: [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints.
-
-4. Training and testing for 20 YCB objects with synthetic data. Modify the configuration file for training on a subset of these objects.
+3. Training and testing for 20 YCB objects with synthetic data. Modify the configuration file for training on a subset of these objects.
     ```Shell
     cd $ROOT
 
