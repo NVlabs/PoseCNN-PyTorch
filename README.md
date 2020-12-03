@@ -61,7 +61,7 @@ Use python3. If ROS is needed, compile with python2.
 7. Compile the ycb_render in $ROOT/ycb_render
     ```Shell
     cd $ROOT/ycb_render
-    python setup.py develop
+    sudo python setup.py develop
     ```
 
 ### Download
