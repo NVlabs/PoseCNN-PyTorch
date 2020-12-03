@@ -9,6 +9,6 @@ export CUDA_VISIBLE_DEVICES=$1
 time ./ros/test_images.py --gpu $1 \
   --instance 0 \
   --network posecnn \
-  --pretrained output/ycb_object/ycb_object_train/vgg16_ycb_object_epoch_4.checkpoint.pth \
+  --pretrained data/checkpoints/ycb_object/vgg16_ycb_object_self_supervision_epoch_8.checkpoint.pth \
   --dataset ycb_object_test \
   --cfg experiments/cfgs/ycb_object.yml

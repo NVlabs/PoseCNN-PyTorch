@@ -1,7 +1,5 @@
 # PoseCNN-PyTorch
 
-PyTorch implementation of the PoseCNN framework.
-
 ### Introduction
 
 We implement PoseCNN in PyTorch in this project.
@@ -9,6 +7,8 @@ We implement PoseCNN in PyTorch in this project.
 PoseCNN is an end-to-end Convolutional Neural Network for 6D object pose estimation. PoseCNN estimates the 3D translation of an object by localizing its center in the image and predicting its distance from the camera. The 3D rotation of the object is estimated by regressing to a quaternion representation. [arXiv](https://arxiv.org/abs/1711.00199), [Project](https://rse-lab.cs.washington.edu/projects/posecnn/)
 
 The code also supports pose refinement by matching segmented 3D point cloud of an object to its SDF.
+
+Rotation regression in PoseCNN cannot handle symmetric objects very well. Check [PoseRBPF](https://github.com/NVlabs/PoseRBPF) for a better solution for symmetric objects.
 
 ### License
 
@@ -66,11 +66,11 @@ Use python3. If ROS is needed, compile with python2.
 
 ### Download
 
-- 3D models of YCB Objects we used [here](https://drive.google.com/file/d/1PTNmhd-eSq0fwSPv0nvQN8h_scR1v-UJ/view?usp=sharing). Save under $ROOT/data or use a symbol link.
+- 3D models of YCB Objects we used [here](https://drive.google.com/file/d/1PTNmhd-eSq0fwSPv0nvQN8h_scR1v-UJ/view?usp=sharing) (3G). Save under $ROOT/data or use a symbol link.
 
-- Our pre-trained models [here](https://drive.google.com/file/d/1-ECAkkTRfa1jJ9YBTzf04wxCGw6-m5d4/view?usp=sharing). Save under $ROOT/data or use a symbol link.
+- Our pre-trained models [here](https://drive.google.com/file/d/1-ECAkkTRfa1jJ9YBTzf04wxCGw6-m5d4/view?usp=sharing) (4G). Save under $ROOT/data or use a symbol link.
 
-- Our real-world images with pose annotations for 20 YCB objects collected via robot interation [here](https://drive.google.com/file/d/1cQH_dnDzyrI0MWNx8st4lht_q0F6cUrE/view?usp=sharing). Check our ICRA 2020 [paper](https://arxiv.org/abs/1909.10159) for details.
+- Our real-world images with pose annotations for 20 YCB objects collected via robot interation [here](https://drive.google.com/file/d/1cQH_dnDzyrI0MWNx8st4lht_q0F6cUrE/view?usp=sharing) (53G). Check our ICRA 2020 [paper](https://arxiv.org/abs/1909.10159) for details.
 
 
 ### Running the demo
@@ -82,7 +82,7 @@ Use python3. If ROS is needed, compile with python2.
     ./experiments/scripts/demo.sh
     ```
 
-### Training your own models with synthetic data
+### Training your own models with synthetic data for YCB objects
 
 1. Download background images: our own images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G), COCO 2014 images [here](https://cocodataset.org/#download), or use your own background images.
 
@@ -122,6 +122,11 @@ Use python3. If ROS is needed, compile with python2.
     ```
 
 ### Running with ROS on a Realsense Camera for real-world pose estimation
+
+- Python2 is needed for ROS.
+
+- Make sure our pretrained checkpoints are downloaded.
+
 ```Shell
 # start realsense
 roslaunch realsense2_camera rs_aligned_depth.launch tf_prefix:=measured/camera
