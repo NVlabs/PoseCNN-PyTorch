@@ -41,7 +41,7 @@ Use python3. If ROS is needed, compile with python2.
 
 3. Install Sophus from the Github source code [here](https://github.com/yuxng/Sophus)
 
-4. Initialize all submodules
+4. Initialize the submodules in ycb_render
    ```Shell
    git submodule update --init --recursive
    ```
