@@ -1,9 +1,6 @@
-# --------------------------------------------------------
-# FCN
-# Copyright (c) 2016
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Yu Xiang
-# --------------------------------------------------------
+# Copyright (c) 2020 NVIDIA Corporation. All rights reserved.
+# This work is licensed under the NVIDIA Source Code License - Non-commercial. Full
+# text can be found in LICENSE.md
 
 """Factory method for easily getting imdbs by name."""
 

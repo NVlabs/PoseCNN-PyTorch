@@ -1,4 +1,4 @@
-# NVIDIA Source Code License for PoseCNN-PyTorch: A PyTorch Implementation of the PoseCNN Framework
+# NVIDIA Source Code License for PoseCNN-PyTorch: A PyTorch Implementation of the PoseCNN Framework for 6D Object Pose Estimation
 
 ## 1. Definitions
 
