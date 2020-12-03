@@ -82,6 +82,8 @@ Use python3. If ROS is needed, compile with python2.
     ./experiments/scripts/demo.sh
     ```
 
+<img src="./data/pics/posecnn.png" width="640" height="360"/>
+
 ### Training your own models with synthetic data for YCB objects
 
 1. Download background images, and save to $ROOT/data or use symbol links.

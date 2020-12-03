@@ -153,25 +153,16 @@ def vis_test(dataset, im, im_depth, label, rois, poses, poses_refined, im_pose, 
     ax = fig.add_subplot(m, n, plot)
     plot += 1
     plt.imshow(im)
-    ax.set_title('input image') 
+    plt.axis('off')
+    ax.set_title('input image')
 
     # show predicted label
     im_label = dataset.labels_to_image(label)
     ax = fig.add_subplot(m, n, plot)
     plot += 1
     plt.imshow(im_label)
+    plt.axis('off')
     ax.set_title('predicted labels')
-
-    ax = fig.add_subplot(m, n, plot)
-    plot += 1
-    plt.imshow(im_pose)
-    ax.set_title('rendered image')
-
-    if cfg.TEST.POSE_REFINE and im_pose_refine is not None and im_depth is not None:
-        ax = fig.add_subplot(m, n, plot)
-        plot += 1
-        plt.imshow(im_pose_refine)
-        ax.set_title('rendered image refine')
 
     if cfg.TRAIN.VERTEX_REG or cfg.TRAIN.VERTEX_REG_DELTA:
 
@@ -179,6 +170,7 @@ def vis_test(dataset, im, im_depth, label, rois, poses, poses_refined, im_pose, 
         ax = fig.add_subplot(m, n, plot)
         plot += 1
         plt.imshow(im)
+        plt.axis('off')
         ax.set_title('predicted boxes')
         for j in range(rois.shape[0]):
             cls = rois[j, 1]
@@ -193,6 +185,7 @@ def vis_test(dataset, im, im_depth, label, rois, poses, poses_refined, im_pose, 
             cy = (y1 + y2) / 2
             plt.plot(cx, cy, 'yo')
 
+        '''
         # show predicted poses
         if cfg.TRAIN.POSE_REG:
             ax = fig.add_subplot(m, n, plot)
@@ -218,14 +211,6 @@ def vis_test(dataset, im, im_depth, label, rois, poses, poses_refined, im_pose, 
                     x2d[1, :] = np.divide(x2d[1, :], x2d[2, :])
                     plt.plot(x2d[0, :], x2d[1, :], '.', color=np.divide(class_colors[cls], 255.0), alpha=0.5)
 
-        elif im_depth is not None:
-            im = im_depth.copy()
-            ax = fig.add_subplot(m, n, plot)
-            plot += 1
-            plt.imshow(im)
-            ax.set_title('input depth') 
-
-        '''
         if out_vertex is not None:
             # show predicted vertex targets
             vertex_target = vertex_pred[0, :, :, :]
@@ -253,6 +238,27 @@ def vis_test(dataset, im, im_depth, label, rois, poses, poses_refined, im_pose, 
             plt.imshow(center[2,:,:])
             ax.set_title('predicted z')
         '''
+
+    # show depth
+    if im_depth is not None:
+        ax = fig.add_subplot(m, n, plot)
+        plot += 1
+        plt.imshow(im_depth)
+        plt.axis('off')
+        ax.set_title('input depth')
+
+    ax = fig.add_subplot(m, n, plot)
+    plot += 1
+    plt.imshow(im_pose)
+    plt.axis('off')
+    ax.set_title('estimated poses')
+
+    if cfg.TEST.POSE_REFINE and im_pose_refine is not None and im_depth is not None:
+        ax = fig.add_subplot(m, n, plot)
+        plot += 1
+        plt.imshow(im_pose_refine)
+        plt.axis('off')
+        ax.set_title('estimated poses refined')
 
     if im_index is not None:
         mng = plt.get_current_fig_manager()
