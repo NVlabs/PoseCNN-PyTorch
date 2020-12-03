@@ -43,24 +43,29 @@ Use python3. If ROS is needed, compile with python2.
 
 3. Install Sophus from the Github source code [here](https://github.com/yuxng/Sophus)
 
-4. Initialize the submodules in ycb_render
+4. Install python packages
+   ```Shell
+   pip install -r requirement.txt
+   ```
+
+5. Initialize the submodules in ycb_render
    ```Shell
    git submodule update --init --recursive
    ```
 
-5. Compile the new layers under $ROOT/lib/layers we introduce in PoseCNN
+6. Compile the new layers under $ROOT/lib/layers we introduce in PoseCNN
     ```Shell
     cd $ROOT/lib/layers
     sudo python setup.py install
     ```
 
-6. Compile cython components
+7. Compile cython components
     ```Shell
     cd $ROOT/lib/utils
     python setup.py build_ext --inplace
     ```
 
-7. Compile the ycb_render in $ROOT/ycb_render
+8. Compile the ycb_render in $ROOT/ycb_render
     ```Shell
     cd $ROOT/ycb_render
     sudo python setup.py develop
