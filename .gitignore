@@ -9,6 +9,7 @@ lib/utils/bbox.c
 data/
 data_self/
 docker/
+ngc/
 
 .idea/
 # Byte-compiled / optimized / DLL files
