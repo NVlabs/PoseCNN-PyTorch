@@ -84,7 +84,10 @@ Use python3. If ROS is needed, compile with python2.
 
 ### Training your own models with synthetic data for YCB objects
 
-1. Download background images: our own images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G), COCO 2014 images [here](https://cocodataset.org/#download), or use your own background images.
+1. Download background images
+    - Our own images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G)
+    - COCO 2014 images [here](https://cocodataset.org/#download)
+    - Or use your own background images
 
 2. Download pretrained VGG16 weights: [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints. If our pre-trained models are already downloaded, the VGG16 checkpoint should be in $ROOT/data/checkpoints already.
 
@@ -95,7 +98,7 @@ Use python3. If ROS is needed, compile with python2.
     # multi-gpu training, use 1 GPU or 2 GPUs since batch size is set to 2
     ./experiments/scripts/ycb_object_train.sh
 
-    # testing, $GPU_ID can be 0, 1, etc.
+    # testing on synthetic data, $GPU_ID can be 0, 1, etc.
     ./experiments/scripts/ycb_object_test.sh $GPU_ID
 
     ```
