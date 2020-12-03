@@ -84,7 +84,8 @@ Use python3. If ROS is needed, compile with python2.
 
 ### Training your own models with synthetic data for YCB objects
 
-1. Download background images
+1. Download background images, and save to $ROOT/data or use symbol links.
+
     - Our own images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G)
     - COCO 2014 images [here](https://cocodataset.org/#download)
     - Or use your own background images
