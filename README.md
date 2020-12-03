@@ -35,7 +35,7 @@ If you find the package is useful in your research, please consider citing:
 
 Use python3. If ROS is needed, compile with python2.
 
-1. Install [PyTorch](https://pytorch.org/).
+1. Install [PyTorch](https://pytorch.org/)
 
 2. Install Eigen from the Github source code [here](https://github.com/eigenteam/eigen-git-mirror)
 
@@ -46,7 +46,7 @@ Use python3. If ROS is needed, compile with python2.
    git submodule update --init --recursive
    ```
 
-5. Compile the new layers under $ROOT/lib/layers we introduce in PoseCNN.
+5. Compile the new layers under $ROOT/lib/layers we introduce in PoseCNN
     ```Shell
     cd $ROOT/lib/layers
     sudo python setup.py install
