@@ -10,3 +10,4 @@ easydict
 pyyaml
 future
 scipy
+Cython

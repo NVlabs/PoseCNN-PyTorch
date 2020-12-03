@@ -68,14 +68,14 @@ Use python3. If ROS is needed, compile with python2.
 
 - 3D models of YCB Objects we used [here](https://drive.google.com/file/d/1PTNmhd-eSq0fwSPv0nvQN8h_scR1v-UJ/view?usp=sharing) (3G). Save under $ROOT/data or use a symbol link.
 
-- Our pre-trained models [here](https://drive.google.com/file/d/1-ECAkkTRfa1jJ9YBTzf04wxCGw6-m5d4/view?usp=sharing) (4G). Save under $ROOT/data or use a symbol link.
+- Our pre-trained checkpoints [here](https://drive.google.com/file/d/1-ECAkkTRfa1jJ9YBTzf04wxCGw6-m5d4/view?usp=sharing) (4G). Save under $ROOT/data or use a symbol link.
 
 - Our real-world images with pose annotations for 20 YCB objects collected via robot interation [here](https://drive.google.com/file/d/1cQH_dnDzyrI0MWNx8st4lht_q0F6cUrE/view?usp=sharing) (53G). Check our ICRA 2020 [paper](https://arxiv.org/abs/1909.10159) for details.
 
 
 ### Running the demo
 
-1. Download 3D models and our pre-trained models first.
+1. Download 3D models and our pre-trained checkpoints first.
 
 2. run the following script
     ```Shell
