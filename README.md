@@ -10,6 +10,8 @@ Rotation regression in PoseCNN cannot handle symmetric objects very well. Check 
 
 The code also supports pose refinement by matching segmented 3D point cloud of an object to its SDF.
 
+<p align="center"><img src="./data/pics/intro.png" width="640" height="320"/></p>
+
 ### License
 
 PoseCNN-PyTorch is released under the NVIDIA Source Code License (refer to the LICENSE file for details).
@@ -82,7 +84,7 @@ Use python3. If ROS is needed, compile with python2.
     ./experiments/scripts/demo.sh
     ```
 
-<img src="./data/pics/posecnn.png" width="640" height="360"/>
+<p align="center"><img src="./data/pics/posecnn.png" width="640" height="360"/></p>
 
 ### Training your own models with synthetic data for YCB objects
 
@@ -148,4 +150,4 @@ rosrun rviz rviz -d ./ros/posecnn.rviz
 ```
 
 Our example:
-<img src="./data/pics/posecnn.gif"/>
+<p align="center"><img src="./data/pics/posecnn.gif"/></p>
