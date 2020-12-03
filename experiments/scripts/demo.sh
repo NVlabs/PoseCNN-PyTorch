@@ -11,6 +11,6 @@ time ./tools/test_images.py --gpu 0 \
   --meta data/images/kitchen/meta.yml \
   --color *color.png \
   --network posecnn \
-  --pretrained output/ycb_object/ycb_object_train/vgg16_ycb_object_epoch_13.checkpoint.pth \
+  --pretrained output/ycb_self_supervision/ycb_self_supervision_all/vgg16_ycb_object_self_supervision_epoch_6.checkpoint.pth \
   --dataset ycb_object_test \
   --cfg experiments/cfgs/ycb_object.yml

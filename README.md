@@ -66,9 +66,11 @@ Use python3. If ROS is needed, compile with python2.
 
 ### Download
 
-- 3D models of YCB Objects we used [here](https://drive.google.com/file/d/1PTNmhd-eSq0fwSPv0nvQN8h_scR1v-UJ/view?usp=sharing).
+- 3D models of YCB Objects we used [here](https://drive.google.com/file/d/1PTNmhd-eSq0fwSPv0nvQN8h_scR1v-UJ/view?usp=sharing). Save under $ROOT/data or use a symbol link.
 
-- Our pre-trained models.
+- Our pre-trained models [here](https://drive.google.com/file/d/1-ECAkkTRfa1jJ9YBTzf04wxCGw6-m5d4/view?usp=sharing). Save under $ROOT/data or use a symbol link.
+
+- Our real-world images with pose annotations for 20 YCB objects collected via robot interation [here](https://drive.google.com/file/d/1cQH_dnDzyrI0MWNx8st4lht_q0F6cUrE/view?usp=sharing). Check our ICRA 2020 [paper](https://arxiv.org/abs/1909.10159) for details.
 
 
 ### Running the demo
@@ -84,7 +86,7 @@ Use python3. If ROS is needed, compile with python2.
 
 1. Download background images: our own images [here](https://drive.google.com/file/d/1Q5VTKHEEejT2lAKwefG00eWcrnNnpieC/view?usp=sharing) (7G), COCO 2014 images [here](https://cocodataset.org/#download), or use your own background images.
 
-2. Download pretrained VGG16 weights: [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints.
+2. Download pretrained VGG16 weights: [here](https://drive.google.com/file/d/1tTd64s1zNnjONlXvTFDZAf4E68Pupc_S/view?usp=sharing) (528M). Put the weight file to $ROOT/data/checkpoints. If our pre-trained models are already downloaded, the VGG16 checkpoint should be in $ROOT/data/checkpoints already.
 
 3. Training and testing for 20 YCB objects with synthetic data. Modify the configuration file for training on a subset of these objects.
     ```Shell

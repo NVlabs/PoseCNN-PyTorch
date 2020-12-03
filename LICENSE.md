@@ -1,4 +1,4 @@
-# NVIDIA Source Code License for PoseCNN: A Convolutional Neural Network for 6D Object Pose Estimation in Cluttered Scenes
+# NVIDIA Source Code License for PoseCNN-PyTorch: A PyTorch Implementation of the PoseCNN Framework
 
 ## 1. Definitions
 
