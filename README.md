@@ -144,3 +144,6 @@ rosrun rviz rviz -d ./ros/posecnn.rviz
 # run full posecnn (20 objects), $GPU_ID can be 0, 1, etc.
 ./experiments/scripts/ros_ycb_object_test.sh $GPU_ID
 ```
+
+Our example:
+<img src="./data/pics/posecnn.gif"/>

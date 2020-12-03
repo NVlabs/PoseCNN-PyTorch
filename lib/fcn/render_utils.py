@@ -85,7 +85,7 @@ def render_image(dataset, im, rois, poses, poses_refine, labels):
         im_render = np.clip(im_render, 0, 1)
         im_render = im_render[:, :, :3] * 255
         im_render = im_render.astype(np.uint8)
-        im_output = 0.8 * im[:,:,(2, 1, 0)].astype(np.float32) + 2.0 * im_render.astype(np.float32)
+        im_output = 0.8 * im[:,:,(2, 1, 0)].astype(np.float32) + 1.0 * im_render.astype(np.float32)
         im_output = np.clip(im_output, 0, 255)
 
         # pose refine
@@ -97,7 +97,7 @@ def render_image(dataset, im, rois, poses, poses_refine, labels):
              im_render = np.clip(im_render, 0, 1)
              im_render = im_render[:, :, :3] * 255
              im_render = im_render.astype(np.uint8)
-             im_output_refine = 0.8 * im[:,:,(2, 1, 0)].astype(np.float32) + 2.0 * im_render.astype(np.float32)
+             im_output_refine = 0.8 * im[:,:,(2, 1, 0)].astype(np.float32) + 1.0 * im_render.astype(np.float32)
              im_output_refine = np.clip(im_output_refine, 0, 255)
              im_output_refine = im_output_refine.astype(np.uint8)
         else:

@@ -18,8 +18,8 @@ Panels:
         - /DepthCloud2/Auto Size1
         - /posecnn+sdf1
         - /deepim1
-      Splitter Ratio: 0.829787254
-    Tree Height: 571
+      Splitter Ratio: 0.8297872543334961
+    Tree Height: 541
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -28,7 +28,7 @@ Panels:
       - /2D Nav Goal1
       - /Publish Point1
     Name: Tool Properties
-    Splitter Ratio: 0.588679016
+    Splitter Ratio: 0.5886790156364441
   - Class: rviz/Views
     Expanded:
       - /Current View1
@@ -39,6 +39,8 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: rgb_input
+Preferences:
+  PromptSaveOnExit: true
 Toolbars:
   toolButtonStyle: 2
 Visualization Manager:
@@ -50,7 +52,7 @@ Visualization Manager:
       Color: 160; 160; 164
       Enabled: true
       Line Style:
-        Line Width: 0.0299999993
+        Line Width: 0.029999999329447746
         Value: Lines
       Name: Grid
       Normal Cell Count: 0
@@ -153,14 +155,6 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        deepim/00_extra_large_clamp_01:
-          Value: false
-        deepim/00_extra_large_clamp_02:
-          Value: false
-        deepim/00_pitcher_base_01:
-          Value: false
-        deepim/00_tomato_soup_can_01:
-          Value: true
         measured/camera_aligned_depth_to_color_frame:
           Value: false
         measured/camera_aligned_depth_to_infra1_frame:
@@ -183,107 +177,75 @@ Visualization Manager:
           Value: false
         measured/camera_link:
           Value: false
-        posecnn/00_extra_large_clamp_01:
+        measured/panda_hand:
           Value: false
-        posecnn/00_extra_large_clamp_01_refined:
+        posecnn/00_bowl_01:
           Value: false
-        posecnn/00_extra_large_clamp_01_roi:
+        posecnn/00_bowl_01_refined:
+          Value: true
+        posecnn/00_bowl_01_roi:
           Value: false
-        posecnn/00_extra_large_clamp_02:
+        posecnn/00_cracker_box_01:
           Value: false
-        posecnn/00_extra_large_clamp_02_refined:
+        posecnn/00_cracker_box_01_refined:
+          Value: true
+        posecnn/00_cracker_box_01_roi:
           Value: false
-        posecnn/00_extra_large_clamp_02_roi:
+        posecnn/00_foam_brick_01:
           Value: false
-        posecnn/00_extra_large_clamp_03:
+        posecnn/00_foam_brick_01_refined:
+          Value: true
+        posecnn/00_foam_brick_01_roi:
           Value: false
-        posecnn/00_extra_large_clamp_03_refined:
+        posecnn/00_mustard_bottle_01:
           Value: false
-        posecnn/00_extra_large_clamp_03_roi:
+        posecnn/00_mustard_bottle_01_refined:
+          Value: true
+        posecnn/00_mustard_bottle_01_roi:
           Value: false
-        posecnn/00_pitcher_base_01:
+        posecnn/00_sugar_box_01:
           Value: false
-        posecnn/00_pitcher_base_01_refined:
-          Value: false
-        posecnn/00_pitcher_base_01_roi:
-          Value: false
-        posecnn/00_tomato_soup_can_01:
-          Value: false
-        posecnn/00_tomato_soup_can_01_refined:
-          Value: false
-        posecnn/00_tomato_soup_can_01_roi:
-          Value: false
-        posecnn/00_wood_block_01:
-          Value: false
-        posecnn/00_wood_block_01_refined:
-          Value: false
-        posecnn/00_wood_block_01_roi:
+        posecnn/00_sugar_box_01_refined:
+          Value: true
+        posecnn/00_sugar_box_01_roi:
           Value: false
       Marker Scale: 0.5
       Name: TF
       Show Arrows: false
       Show Axes: true
-      Show Names: true
+      Show Names: false
       Tree:
-        measured/camera_link:
-          measured/camera_aligned_depth_to_color_frame:
-            measured/camera_color_optical_frame:
-              deepim/00_extra_large_clamp_01:
-                {}
-              deepim/00_extra_large_clamp_02:
-                {}
-              deepim/00_pitcher_base_01:
-                {}
-              deepim/00_tomato_soup_can_01:
-                {}
-              posecnn/00_extra_large_clamp_01:
-                {}
-              posecnn/00_extra_large_clamp_01_refined:
-                {}
-              posecnn/00_extra_large_clamp_01_roi:
-                {}
-              posecnn/00_extra_large_clamp_02:
-                {}
-              posecnn/00_extra_large_clamp_02_refined:
-                {}
-              posecnn/00_extra_large_clamp_02_roi:
-                {}
-              posecnn/00_extra_large_clamp_03:
-                {}
-              posecnn/00_extra_large_clamp_03_refined:
-                {}
-              posecnn/00_extra_large_clamp_03_roi:
-                {}
-              posecnn/00_pitcher_base_01:
-                {}
-              posecnn/00_pitcher_base_01_refined:
-                {}
-              posecnn/00_pitcher_base_01_roi:
-                {}
-              posecnn/00_tomato_soup_can_01:
-                {}
-              posecnn/00_tomato_soup_can_01_refined:
-                {}
-              posecnn/00_tomato_soup_can_01_roi:
-                {}
-              posecnn/00_wood_block_01:
-                {}
-              posecnn/00_wood_block_01_refined:
-                {}
-              posecnn/00_wood_block_01_roi:
-                {}
-          measured/camera_aligned_depth_to_infra1_frame:
-            measured/camera_infra1_optical_frame:
+        measured/panda_hand:
+          measured/camera_color_optical_frame:
+            posecnn/00_bowl_01:
               {}
-          measured/camera_color_frame:
-            {}
-          measured/camera_depth_frame:
-            measured/camera_depth_optical_frame:
+            posecnn/00_bowl_01_refined:
               {}
-          measured/camera_infra1_frame:
-            {}
-          measured/camera_infra2_frame:
-            measured/camera_infra2_optical_frame:
+            posecnn/00_bowl_01_roi:
+              {}
+            posecnn/00_cracker_box_01:
+              {}
+            posecnn/00_cracker_box_01_refined:
+              {}
+            posecnn/00_cracker_box_01_roi:
+              {}
+            posecnn/00_foam_brick_01:
+              {}
+            posecnn/00_foam_brick_01_refined:
+              {}
+            posecnn/00_foam_brick_01_roi:
+              {}
+            posecnn/00_mustard_bottle_01:
+              {}
+            posecnn/00_mustard_bottle_01_refined:
+              {}
+            posecnn/00_mustard_bottle_01_roi:
+              {}
+            posecnn/00_sugar_box_01:
+              {}
+            posecnn/00_sugar_box_01_refined:
+              {}
+            posecnn/00_sugar_box_01_roi:
               {}
       Update Interval: 0
       Value: true
@@ -364,7 +326,10 @@ Visualization Manager:
     - Class: rviz/FocusCamera
     - Class: rviz/Measure
     - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
       Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
     - Class: rviz/SetGoal
       Topic: /move_base_simple/goal
     - Class: rviz/PublishPoint
@@ -374,33 +339,33 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.481717646
+      Distance: 0.4804145395755768
       Enable Stereo Rendering:
-        Stereo Eye Separation: 0.0599999987
+        Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.0441879928
-        Y: -0.488957047
-        Z: 0.310679466
+        X: 0.08082602918148041
+        Y: 0.03945954889059067
+        Z: 0.3101448118686676
       Focal Shape Fixed Size: true
-      Focal Shape Size: 0.0500000007
+      Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
-      Near Clip Distance: 0.00999999978
-      Pitch: -1.13479626
+      Near Clip Distance: 0.009999999776482582
+      Pitch: -1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.49583817
+      Yaw: 4.720839500427246
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1176
+  Height: 1145
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000024300000287fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006600fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007301000001a100000287000000e200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000037f000000b7000000000000000000000001000001ee00000287fc0200000005fb00000012007200670062005f0069006e00700075007401000001a10000013d0000001b00fffffffb0000001600640065007000740068005f0069006e00700075007401000002e4000001440000001b00fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc0000023d000001f90000000000fffffffa000000000100000002fb0000000a0049006d0061006700650100000000ffffffff0000000000000000fb0000000a005600690065007700730000000551000001ee0000011e00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000073f00000173fc010000000cfb000000220070006f007300650063006e006e00200064006500740065006300740069006f006e0100000000000001d1000000db00fffffffb0000000e0070006f007300650063006e006e01000001d7000001ce0000007e00fffffffb0000000a0049006d00610067006501000003e7000001a70000000000000000fb000000160070006f007300650063006e006e002b00730064006601000003ab000001ca000000a600fffffffb000000160070006f007300650063006e006e002b0073006400660100000302000001770000000000000000fb0000000c00640065006500700069006d010000057b000001c40000007700fffffffb0000001600640065007000740068005f0069006e0070007500740100000000000001aa0000000000000000fb00000012007200670062005f0069006e00700075007401000001b0000001c20000000000000000fb000000100050006f0073006500520042005000460100000378000001de0000000000000000fb0000000e0050006f007300650043004e004e010000055c000001e30000000000000000fb0000000a00560069006500770073030000004e00000080000002e100000197fb000000160050006f007300650043004e004e0020006f006c006401000006b30000008c0000000000000000000000030000073f00000046fc0100000002fb0000000800540069006d006501000000000000073f000003cc00fffffffb0000000800540069006d00650100000000000004500000000000000000000003020000028700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000002430000025afc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007301000001b60000025a000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000037f000000b7000000000000000000000001000001ee0000025afc0200000005fb00000012007200670062005f0069006e00700075007401000001b6000001270000001600fffffffb0000001600640065007000740068005f0069006e00700075007401000002e30000012d0000001600fffffffb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc0000023d000001f90000000000fffffffa000000000100000002fb0000000a0049006d0061006700650100000000ffffffff0000000000000000fb0000000a005600690065007700730000000551000001ee0000010000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000073d00000173fc010000000cfb000000220070006f007300650063006e006e00200064006500740065006300740069006f006e0100000000000001d0000000b300fffffffb0000000e0070006f007300650063006e006e01000001d6000001ce0000006d00fffffffb0000000a0049006d00610067006501000003e7000001a70000000000000000fb000000160070006f007300650063006e006e002b00730064006601000003aa000001c90000008b00fffffffb000000160070006f007300650063006e006e002b0073006400660100000302000001770000000000000000fb0000000c00640065006500700069006d0100000579000001c40000006800fffffffb0000001600640065007000740068005f0069006e0070007500740100000000000001aa0000000000000000fb00000012007200670062005f0069006e00700075007401000001b0000001c20000000000000000fb000000100050006f0073006500520042005000460100000378000001de0000000000000000fb0000000e0050006f007300650043004e004e010000055c000001e30000000000000000fb0000000a00560069006500770073030000004e00000080000002e100000197fb000000160050006f007300650043004e004e0020006f006c006401000006b30000008c0000000000000000000000030000073d00000046fc0100000002fb0000000800540069006d006501000000000000073d000002eb00fffffffb0000000800540069006d00650100000000000004500000000000000000000003000000025a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -409,9 +374,9 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1855
-  X: 65
-  Y: 24
+  Width: 1853
+  X: 67
+  Y: 27
   deepim:
     collapsed: false
   depth_input:
