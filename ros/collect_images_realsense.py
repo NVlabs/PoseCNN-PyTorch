@@ -28,6 +28,8 @@ class ImageListener:
         # output dir
         this_dir = osp.dirname(__file__)
         self.outdir = osp.join(this_dir, '..', 'data', 'images')
+        if not os.path.exists(self.outdir):
+            os.mkdir(self.outdir)
 
         # initialize a node
         rospy.init_node("image_listener")
