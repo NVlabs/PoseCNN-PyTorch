@@ -57,6 +57,11 @@ def render_image(dataset, im, rois, poses, poses_refine, labels):
             y2 = rois[i, 5]
             cv2.rectangle(im_label, (x1, y1), (x2, y2), class_colors[cls], 2)
 
+            # draw center
+            cx = int((x1 + x2) / 2)
+            cy = int((y1 + y2) / 2)
+            cv2.circle(im_label, (cx, cy), 2, (255, 255, 0), 10)
+
     # rendering
     if len(cls_indexes) > 0 and cfg.TRAIN.POSE_REG:
 
