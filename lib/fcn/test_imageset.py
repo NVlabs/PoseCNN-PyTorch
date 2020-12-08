@@ -226,16 +226,19 @@ def vis_test(dataset, im, im_depth, label, rois, poses, poses_refined, im_pose, 
             ax = fig.add_subplot(m, n, plot)
             plot += 1
             plt.imshow(center[0,:,:])
+            plt.axis('off')
             ax.set_title('predicted center x') 
 
             ax = fig.add_subplot(m, n, plot)
             plot += 1
             plt.imshow(center[1,:,:])
+            plt.axis('off')
             ax.set_title('predicted center y')
 
             ax = fig.add_subplot(m, n, plot)
             plot += 1
             plt.imshow(center[2,:,:])
+            plt.axis('off')
             ax.set_title('predicted z')
         '''
 
