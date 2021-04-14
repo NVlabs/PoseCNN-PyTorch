@@ -134,6 +134,34 @@ Use python3. If ROS is needed, compile with python2.
 
     ```
 
+### Training and testing on the DexYCB dataset
+1. Download the DexYCB dataset from [here](https://dex-ycb.github.io/).
+
+2. Create a symlink for the DexYCB dataset
+    ```Shell
+    cd $ROOT/data/DEX_YCB
+    ln -s $dex_ycb_data data
+    ```
+
+3. Training and testing on the DexYCB dataset
+    ```Shell
+    cd $ROOT
+
+    # multi-gpu training for different splits, use 1 GPU or 2 GPUs since batch size is set to 2
+    ./experiments/scripts/dex_ycb_train_s0.sh
+    ./experiments/scripts/dex_ycb_train_s1.sh
+    ./experiments/scripts/dex_ycb_train_s2.sh
+    ./experiments/scripts/dex_ycb_train_s3.sh
+
+    # testing, $GPU_ID can be 0, 1, etc.
+    # our trained models are in checkpoints.zip
+    ./experiments/scripts/dex_ycb_test_s0.sh $GPU_ID $EPOCH
+    ./experiments/scripts/dex_ycb_test_s1.sh $GPU_ID $EPOCH
+    ./experiments/scripts/dex_ycb_test_s2.sh $GPU_ID $EPOCH
+    ./experiments/scripts/dex_ycb_test_s3.sh $GPU_ID $EPOCH
+
+    ```
+
 ### Running with ROS on a Realsense Camera for real-world pose estimation
 
 - Python2 is needed for ROS.

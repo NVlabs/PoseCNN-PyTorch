@@ -621,7 +621,7 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
 
                 # pose from network
                 R = quat2mat(result['poses'][j, :4].flatten())
-                t = result['poses'][j, 4:]
+                t = result['poses'][j, 4:] * 1000
                 line = '{scene_id},{im_id},{obj_id},{score},{R},{t},{time}\n'.format(
                     scene_id=scene_id,
                     im_id=im_id,
@@ -634,7 +634,7 @@ class DexYCBDataset(data.Dataset, datasets.imdb):
 
                 if cfg.TEST.POSE_REFINE:
                     R = quat2mat(result['poses_refined'][j, :4].flatten())
-                    t = result['poses_refined'][j, 4:]
+                    t = result['poses_refined'][j, 4:] * 1000
                     line = '{scene_id},{im_id},{obj_id},{score},{R},{t},{time}\n'.format(
                         scene_id=scene_id,
                         im_id=im_id,
