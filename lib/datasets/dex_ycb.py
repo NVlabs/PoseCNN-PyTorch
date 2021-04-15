@@ -24,16 +24,16 @@ from utils.pose_error import *
 from utils.cython_bbox import bbox_overlaps
 
 _SUBJECTS = [
-    '20200709-weiy',
-    '20200813-ceppner',
-    '20200820-amousavian',
-    '20200903-ynarang',
-    '20200908-yux',
-    '20200918-ftozetoramos',
-    '20200928-ahanda',
-    '20201002-dieterf',
-    '20201015-ychao',
-    '20201022-lmanuelli',
+    '20200709-subject-01',
+    '20200813-subject-02',
+    '20200820-subject-03',
+    '20200903-subject-04',
+    '20200908-subject-05',
+    '20200918-subject-06',
+    '20200928-subject-07',
+    '20201002-subject-08',
+    '20201015-subject-09',
+    '20201022-subject-10',
 ]
 
 _SERIALS = [
