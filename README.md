@@ -40,8 +40,12 @@ Use python3. If ROS is needed, compile with python2.
 1. Install [PyTorch](https://pytorch.org/)
 
 2. Install Eigen from the Github source code [here](https://github.com/eigenteam/eigen-git-mirror)
+   - I installed not from github but using command 'sudo apt install libeigen3-dev'. This resulted in package getting installed at '/usr/include/eigen3' instead of '/usr/local/eigen3'. So I had to change the include_dirs value in $ROOT/lib/layers/setup.py accordingly.
+   - For newbies, I found the path of eigen3 on my system using 'dpkg -L libeigen3-dev' command.
 
 3. Install Sophus from the Github source code [here](https://github.com/yuxng/Sophus)
+   - I followed this link 'https://chowdera.com/2021/06/20210602213411499x.html' to help with installing from github. This does install the package into '/usr/local/sophus', so I kept the second value for include_dirs in the $ROOT/lib/layers/setup.py file as is.
+   - Also, when trying to run the above setup.py file (as instructions below suggested), I got an error failing to include fmt/core.h. So I ended up installing fmt as well from Github (luckily the web link above actually has instructions for that too). And this is probably the reason $ROOT/lib/layers/setup.py uses '/usr/local/include' instead of '/usr/local/include/sophus'.
 
 4. Install python packages
    ```Shell

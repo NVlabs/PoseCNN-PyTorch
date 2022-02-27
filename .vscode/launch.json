@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: test_images",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/tools/test_images.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--gpu=0", "--imgdir=data/demo/", "--meta=data/demo/meta.yml", "--color=*color.png",
+                "--network=posecnn", "--pretrained=data/checkpoints/ycb_object/vgg16_ycb_object_self_supervision_epoch_8.checkpoint.pth",
+                "--dataset=ycb_object_test", "--cfg=experiments/cfgs/ycb_object.yml"
+            ],
+            "env": {
+                "PYTHONUNBUFFERED":"True",
+                "CUDA_VISIBLE_DEVICES":"0"
+            }
+        }
+    ]
+}
